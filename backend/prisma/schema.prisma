@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(100)
+  email         String         @unique @db.VarChar(150)
+  passwordHash  String         @map("password_hash")
+  role          String         @db.VarChar(20)
+  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  appointments  Appointment[]  @relation("PatientAppointments")
+  doctor        Doctor?
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Specialty {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique @db.VarChar(100)
+  description String?
+  conditions  Condition[]
+  doctors     Doctor[]
+  triageRules TriageRule[]
+
+  @@map("specialties")
+}
+
+model Doctor {
+  id                Int                  @id @default(autoincrement())
+  userId            Int?                 @unique @map("user_id")
+  specialtyId       Int?                 @map("specialty_id")
+  bio               String?
+  yearsExperience   Int?                 @map("years_experience")
+  createdAt         DateTime?            @default(now()) @map("created_at") @db.Timestamp(6)
+  appointments      Appointment[]        @relation("DoctorAppointments")
+  consultationNotes ConsultationNote[]
+  availability      DoctorAvailability[]
+  specialty         Specialty?           @relation(fields: [specialtyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user              User?                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([specialtyId], map: "idx_doctors_specialty")
+  @@map("doctors")
+}
+
+model DoctorAvailability {
+  id          Int      @id @default(autoincrement())
+  doctorId    Int?     @map("doctor_id")
+  dayOfWeek   Int?     @map("day_of_week") @db.SmallInt
+  startTime   DateTime @map("start_time") @db.Time(6)
+  endTime     DateTime @map("end_time") @db.Time(6)
+  isAvailable Boolean? @default(true) @map("is_available")
+  doctor      Doctor?  @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([doctorId], map: "idx_availability_doctor")
+  @@map("doctor_availability")
+}
+
+model Symptom {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique @db.VarChar(100)
+  conditionSymptoms ConditionSymptom[]
+  questions         SymptomQuestion[]
+  triageRules       TriageRule[]
+
+  @@map("symptoms")
+}
+
+model SymptomQuestion {
+  id           Int                     @id @default(autoincrement())
+  symptomId    Int?                    @map("symptom_id")
+  questionText String                  @map("question_text")
+  questionType String                  @map("question_type") @db.VarChar(20)
+  displayOrder Int?                    @default(0) @map("display_order")
+  options      SymptomQuestionOption[]
+  symptom      Symptom?                @relation(fields: [symptomId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([symptomId], map: "idx_questions_symptom")
+  @@map("symptom_questions")
+}
+
+model SymptomQuestionOption {
+  id          Int              @id @default(autoincrement())
+  questionId  Int?             @map("question_id")
+  optionText  String           @map("option_text") @db.VarChar(150)
+  optionValue String           @map("option_value") @db.VarChar(100)
+  question    SymptomQuestion? @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([questionId], map: "idx_options_question")
+  @@map("symptom_question_options")
+}
+
+model Condition {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique @db.VarChar(150)
+  description       String?
+  causes            String?
+  whenToSeekCare    String?            @map("when_to_seek_care")
+  specialtyId       Int?               @map("specialty_id")
+  conditionSymptoms ConditionSymptom[]
+  specialty         Specialty?         @relation(fields: [specialtyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  medicalArticles   MedicalArticle[]
+
+  @@index([specialtyId], map: "idx_conditions_specialty")
+  @@map("conditions")
+}
+
+model ConditionSymptom {
+  conditionId     Int       @map("condition_id")
+  symptomId       Int       @map("symptom_id")
+  relevanceWeight Decimal?  @default(1.0) @map("relevance_weight") @db.Decimal(3, 2)
+  condition       Condition @relation(fields: [conditionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  symptom         Symptom   @relation(fields: [symptomId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([conditionId, symptomId])
+  @@map("condition_symptoms")
+}
+
+model TriageRule {
+  id                     Int        @id @default(autoincrement())
+  symptomId              Int?       @map("symptom_id")
+  ruleConditions         Json       @map("rule_conditions")
+  matchedConditionIds    Int[]      @map("matched_condition_ids")
+  recommendedSpecialtyId Int?       @map("recommended_specialty_id")
+  urgencyLevel           String     @map("urgency_level") @db.VarChar(10)
+  createdAt              DateTime?  @default(now()) @map("created_at") @db.Timestamp(6)
+  recommendedSpecialty   Specialty? @relation(fields: [recommendedSpecialtyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  symptom                Symptom?   @relation(fields: [symptomId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([ruleConditions], map: "idx_triage_conditions_gin", type: Gin)
+  @@index([symptomId], map: "idx_triage_symptom")
+  @@map("triage_rules")
+}
+
+model Appointment {
+  id               Int               @id @default(autoincrement())
+  patientId        Int?              @map("patient_id")
+  doctorId         Int?              @map("doctor_id")
+  dateTime         DateTime          @map("date_time") @db.Timestamp(6)
+  status           String?           @default("pending") @db.VarChar(20)
+  notes            String?
+  createdAt        DateTime?         @default(now()) @map("created_at") @db.Timestamp(6)
+  doctor           Doctor?           @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient          User?             @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  consultationNote ConsultationNote?
+
+  @@index([dateTime], map: "idx_appointments_datetime")
+  @@index([doctorId], map: "idx_appointments_doctor")
+  @@index([patientId], map: "idx_appointments_patient")
+  @@map("appointments")
+}
+
+model ConsultationNote {
+  id            Int          @id @default(autoincrement())
+  appointmentId Int?         @unique @map("appointment_id")
+  doctorId      Int?         @map("doctor_id")
+  content       String
+  createdAt     DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime?    @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  doctor        Doctor?      @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([doctorId], map: "idx_notes_doctor")
+  @@map("consultation_notes")
+}
+
+model Notification {
+  id        Int       @id @default(autoincrement())
+  userId    Int?      @map("user_id")
+  type      String    @db.VarChar(50)
+  message   String
+  isRead    Boolean?  @default(false) @map("is_read")
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId], map: "idx_notifications_user")
+  @@map("notifications")
+}
+
+model MedicalArticle {
+  id          Int        @id @default(autoincrement())
+  conditionId Int?       @map("condition_id")
+  title       String     @db.VarChar(200)
+  content     String
+  source      String?    @db.VarChar(200)
+  condition   Condition? @relation(fields: [conditionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([conditionId], map: "idx_articles_condition")
+  @@map("medical_articles")
+}
