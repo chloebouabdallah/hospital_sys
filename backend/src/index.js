@@ -1,15 +1,17 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('./lib/prisma');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 
 const app = express();
-const prisma = new PrismaClient();
 
+// Middleware first
 app.use(cors());
 app.use(express.json());
 
-// Health-check: confirms Express <-> Postgres connectivity (Day 6 checkpoint)
+// Then routes
 app.get('/api/health', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -20,18 +22,19 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Quick sanity check that seed data landed correctly
 app.get('/api/specialties', async (req, res) => {
   const specialties = await prisma.specialty.findMany();
   res.json(specialties);
 });
+
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);   // ← moved here, corrected prefix
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-// Graceful shutdown so Prisma connections close cleanly
 process.on('SIGINT', async () => {
   await prisma.$disconnect();
   process.exit(0);
