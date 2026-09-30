@@ -4,6 +4,8 @@ const cors = require('cors');
 const prisma = require('./lib/prisma');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const doctorRoutes = require('./routes/doctor.routes');
+
 
 const app = express();
 
@@ -28,7 +30,9 @@ app.get('/api/specialties', async (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);   // ← moved here, corrected prefix
+app.use('/api/users', userRoutes);  
+app.use('/api/doctors', doctorRoutes);
+ // ← moved here, corrected prefix
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
