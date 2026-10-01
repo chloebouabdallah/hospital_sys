@@ -1,11 +1,20 @@
 const bcrypt = require('bcrypt');
-const prisma = require('../lib/prisma');
 const jwt = require('jsonwebtoken');
+const prisma = require('../lib/prisma');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 const SALT_ROUNDS = 10;
-const JWT_SECRET = process.env.JWT_SECRET;
+
+// Cookie options shared between login (set) and logout (clear).
+const COOKIE_NAME = 'token';
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: process.env.NODE_ENV === 'production', // must be true in prod (HTTPS)
+  maxAge: 7 * 24 * 60 * 60 * 1000,               // 7 days, matches JWT expiry
+  path: '/',
+};
 
 async function register(req, res) {
   try {
@@ -36,12 +45,7 @@ async function register(req, res) {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
     const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        passwordHash,
-        role: 'patient',
-      },
+      data: { name, email, passwordHash, role: 'patient' },
       select: { id: true, name: true, email: true, role: true, createdAt: true },
     });
 
@@ -57,16 +61,14 @@ async function register(req, res) {
 
 async function login(req, res) {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = (email || '').trim().toLowerCase();
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required.' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
-
-    // Same generic message whether the email doesn't exist or the password is wrong —
-    // never reveal which one it was, that leaks which emails are registered.
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
@@ -79,11 +81,13 @@ async function login(req, res) {
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' } // adjust as you like — 7 days is a reasonable default for an FYP demo
+      { expiresIn: '7d' }
     );
 
+    res.cookie(COOKIE_NAME, token, cookieOptions);
+
+    // Never send the token in the response body — it lives only in the HttpOnly cookie.
     return res.status(200).json({
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -97,9 +101,13 @@ async function login(req, res) {
   }
 }
 
-async function logout(req, res) {
-  // No-op for now: JWTs are stateless, so "logout" just means the frontend
-  // discards the token. If you add token blacklisting later, check it here.
+function logout(req, res) {
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+  });
   return res.status(200).json({ message: 'Logged out.' });
 }
 

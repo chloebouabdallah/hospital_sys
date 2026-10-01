@@ -1,12 +1,12 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-async function request(path, { method = 'GET', body, token } = {}) {
+async function request(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(`${BASE_URL}/api${path}`, {
     method,
     headers,
+    credentials: 'include',       // send & receive cookies
     body: body ? JSON.stringify(body) : undefined,
   });
 
@@ -14,7 +14,7 @@ async function request(path, { method = 'GET', body, token } = {}) {
   try {
     data = await res.json();
   } catch {
-    // some endpoints may return no body
+    // some endpoints may have no JSON body
   }
 
   if (!res.ok) {
@@ -30,6 +30,6 @@ async function request(path, { method = 'GET', body, token } = {}) {
 export const api = {
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
-  logout: (token) => request('/auth/logout', { method: 'POST', token }),
-  getMe: (token) => request('/users/me', { token }),
+  logout: () => request('/auth/logout', { method: 'POST' }),
+  getMe: () => request('/users/me'),
 };
