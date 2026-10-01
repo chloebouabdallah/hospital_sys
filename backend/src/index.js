@@ -5,6 +5,7 @@ const prisma = require('./lib/prisma');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const doctorRoutes = require('./routes/doctor.routes');
+const specialtyRoutes = require('./routes/specialty.routes');
 
 
 const app = express();
@@ -28,6 +29,7 @@ app.get('/api/specialties', async (req, res) => {
   const specialties = await prisma.specialty.findMany();
   res.json(specialties);
 });
+app.use('/api/specialties', specialtyRoutes);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);  
