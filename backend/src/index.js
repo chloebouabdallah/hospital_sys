@@ -7,6 +7,8 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const doctorRoutes = require('./routes/doctor.routes');
 const specialtyRoutes = require('./routes/specialty.routes');
+const symptomRoutes = require('./routes/symptom.routes');
+const conditionRoutes = require('./routes/condition.routes');
 
 const app = express();
 
@@ -33,6 +35,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/specialties', specialtyRoutes);
+app.use('/api/symptoms', symptomRoutes);
+app.use('/api/conditions', conditionRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
