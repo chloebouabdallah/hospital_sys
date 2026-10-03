@@ -8,12 +8,14 @@ const {
   updateSymptom,
   deleteSymptom,
 } = require('../controllers/symptom.controller');
+const { getSymptomQuestions } = require('../controllers/question.controller');
 
 // Permission matrix: view = any logged-in role (patient/doctor/admin), manage = admin only.
 const canManage = can((req) => req.user.role === 'admin');
 
 router.get('/', authenticate, getAllSymptoms);
 router.get('/:id', authenticate, getSymptomById);
+router.get('/:id/questions', authenticate, getSymptomQuestions);
 
 router.post('/', authenticate, canManage, createSymptom);
 router.put('/:id', authenticate, canManage, updateSymptom);
