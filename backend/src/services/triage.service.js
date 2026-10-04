@@ -166,6 +166,7 @@ async function runTriage(normalized) {
 
 module.exports = {
   runTriage,
+  keyForQuestion,   // ← add this line
   deriveFacts,
   evaluateRule,
   matchRules,
