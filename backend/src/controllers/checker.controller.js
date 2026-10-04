@@ -18,7 +18,7 @@ async function submit(req, res) {
 
     const triage = await runTriage(result.normalized);
 
-    const response = await buildTriageResponse(triage);
+    const response = await buildTriageResponse(triage, result.normalized);
 
     const body = { submission: result.normalized, result: response };
     // Raw engine output (facts, every matching rule) is handy while testing; hidden in production.

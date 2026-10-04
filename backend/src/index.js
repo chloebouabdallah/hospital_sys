@@ -44,6 +44,17 @@ app.use('/api/symptom-questions', questionRoutes);
 app.use('/api/symptom-question-options', optionRoutes);
 app.use('/api/symptom-checker', checkerRoutes);
 
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Malformed JSON in request body.' });
+  }
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Request body too large.' });
+  }
+  console.error('Unhandled error:', err);
+  return res.status(500).json({ error: 'Something went wrong.' });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

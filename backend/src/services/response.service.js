@@ -1,5 +1,10 @@
 const prisma = require('../lib/prisma');
 const { DISCLAIMER } = require('../config/disclaimer');
+const {
+  FALLBACK_URGENCY,
+  FALLBACK_SPECIALTY_NAME,
+  FALLBACK_MESSAGE,
+} = require('../config/fallback');
 
 // Turns the engine's raw result (ids only) into the full response the results screen renders.
 //
@@ -11,16 +16,28 @@ const { DISCLAIMER } = require('../config/disclaimer');
 //                           ordered by rule rank (best rule first), then by the order in the rule
 //  - articles             = MedicalArticles attached under the condition they belong to
 //
-// Day 6 will replace the "nothing matched" branch with a proper fallback.
-async function buildTriageResponse(triage) {
+// If NO rule matched, a cautious fallback is returned instead (see config/fallback.js):
+// matched:false, moderate urgency, a general practitioner, and an explanatory message.
+//
+// `incomplete` is true when the patient skipped some questions, so the UI can nudge them
+// to answer everything for a more accurate result.
+async function buildTriageResponse(triage, normalized) {
   const { primary, matches } = triage;
+  const incomplete = (normalized?.unansweredQuestionIds?.length || 0) > 0;
 
   if (!primary) {
+    const fallbackSpecialty = await prisma.specialty.findUnique({
+      where: { name: FALLBACK_SPECIALTY_NAME },
+      select: { id: true, name: true, description: true },
+    });
+
     return {
       matched: false,
-      urgencyLevel: null,
-      recommendedSpecialty: null,
+      urgencyLevel: FALLBACK_URGENCY,
+      recommendedSpecialty: fallbackSpecialty,
       conditions: [],
+      message: FALLBACK_MESSAGE,
+      incomplete,
       disclaimer: DISCLAIMER,
     };
   }
@@ -91,6 +108,8 @@ async function buildTriageResponse(triage) {
     urgencyLevel: primary.urgencyLevel,
     recommendedSpecialty,
     conditions,
+    message: null,
+    incomplete,
     disclaimer: DISCLAIMER,
   };
 }
