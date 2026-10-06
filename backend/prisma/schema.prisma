@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String         @db.VarChar(100)
-  email         String         @unique @db.VarChar(150)
-  passwordHash  String         @map("password_hash")
-  role          String         @db.VarChar(20)
-  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
-  appointments  Appointment[]  @relation("PatientAppointments")
-  doctor        Doctor?
-  notifications Notification[]
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(100)
+  email          String           @unique @db.VarChar(150)
+  passwordHash   String           @map("password_hash")
+  role           String           @db.VarChar(20)
+  createdAt      DateTime?        @default(now()) @map("created_at") @db.Timestamp(6)
+  appointments   Appointment[]    @relation("PatientAppointments")
+  doctorReviews  DoctorReview[]
+  doctor         Doctor?
+  notifications  Notification[]
 
   @@map("users")
 }
@@ -43,6 +44,7 @@ model Doctor {
   consultationNotes ConsultationNote[]
   availability      DoctorAvailability[]
   hospitals         DoctorHospital[]
+  doctorReviews     DoctorReview[]
   specialty         Specialty?           @relation(fields: [specialtyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user              User?                @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -155,6 +157,7 @@ model Appointment {
   hospital         Hospital?         @relation(fields: [hospitalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   patient          User?             @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   consultationNote ConsultationNote?
+  doctorReview     DoctorReview?
 
   @@index([dateTime], map: "idx_appointments_datetime")
   @@index([doctorId], map: "idx_appointments_doctor")
@@ -229,4 +232,24 @@ model DoctorHospital {
   @@id([doctorId, hospitalId])
   @@index([hospitalId], map: "idx_doctor_hospitals_hospital")
   @@map("doctor_hospitals")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model DoctorReview {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique @map("appointment_id")
+  patientId     Int         @map("patient_id")
+  doctorId      Int         @map("doctor_id")
+  rating        Int         @db.SmallInt
+  comment       String?
+  status        String      @default("visible") @db.VarChar(20)
+  createdAt     DateTime?   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime?   @default(now()) @map("updated_at") @db.Timestamp(6)
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  doctor        Doctor      @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  patient       User        @relation(fields: [patientId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([doctorId, status], map: "idx_reviews_doctor_status")
+  @@index([patientId], map: "idx_reviews_patient")
+  @@map("doctor_reviews")
 }

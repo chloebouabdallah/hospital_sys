@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const prisma = require('./lib/prisma');
+
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const doctorRoutes = require('./routes/doctor.routes');
@@ -12,14 +13,14 @@ const conditionRoutes = require('./routes/condition.routes');
 const questionRoutes = require('./routes/question.routes');
 const optionRoutes = require('./routes/option.routes');
 const checkerRoutes = require('./routes/checker.routes');
-const triageRuleRoutes = require('./routes/triage-rule.routes');
 const hospitalRoutes = require('./routes/hospital.routes');
+const triageRuleRoutes = require('./routes/triage-rule.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
 const availabilityRoutes = require('./routes/availability.routes');
+const reviewRoutes = require('./routes/review.routes');
 
 const app = express();
 
-// CORS must allow credentials (cookies) from the frontend origin.
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,
@@ -47,11 +48,13 @@ app.use('/api/conditions', conditionRoutes);
 app.use('/api/symptom-questions', questionRoutes);
 app.use('/api/symptom-question-options', optionRoutes);
 app.use('/api/symptom-checker', checkerRoutes);
-app.use('/api/triage-rules', triageRuleRoutes);
 app.use('/api/hospitals', hospitalRoutes);
+app.use('/api/triage-rules', triageRuleRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/doctor-availability', availabilityRoutes);
+app.use('/api/doctor-reviews', reviewRoutes);
 
+// Error handler (from Day 6) — put after all routes, before listen.
 app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Malformed JSON in request body.' });

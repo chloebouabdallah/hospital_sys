@@ -9,9 +9,11 @@ const {
   deleteDoctor,
 } = require('../controllers/doctor.controller');
 const { getAvailableSlots } = require('../controllers/availability.controller');
+const { getDoctorReviews } = require('../controllers/review.controller');
 
 router.get('/', getAllDoctors);
 router.get('/:id/available-slots', getAvailableSlots);
+router.get('/:id/reviews', getDoctorReviews);
 router.get('/:id', getDoctorById);
 
 router.post('/', authenticate, authorize('admin'), createDoctor);
