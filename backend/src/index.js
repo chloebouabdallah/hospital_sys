@@ -15,6 +15,7 @@ const checkerRoutes = require('./routes/checker.routes');
 const triageRuleRoutes = require('./routes/triage-rule.routes');
 const hospitalRoutes = require('./routes/hospital.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
+const availabilityRoutes = require('./routes/availability.routes');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/api/symptom-checker', checkerRoutes);
 app.use('/api/triage-rules', triageRuleRoutes);
 app.use('/api/hospitals', hospitalRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/doctor-availability', availabilityRoutes);
 
 app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {
