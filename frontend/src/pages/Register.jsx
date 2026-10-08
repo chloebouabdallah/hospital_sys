@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
+import './Auth.css';
 
 export default function Register() {
   const { register } = useAuth();
@@ -12,6 +14,7 @@ export default function Register() {
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
+    if (error) setError('');
   }
 
   async function handleSubmit(e) {
@@ -30,57 +33,75 @@ export default function Register() {
   }
 
   return (
-    <div className="page-center">
-      <div className="card">
-        <h1>Create a patient account</h1>
-        <p className="subtitle">
-          Self-registration is for patients only — doctor/admin accounts are created by admin.
+    <div className="auth-split">
+      <aside className="auth-art">
+        <Link to="/" className="auth-logo">
+         <Logo size={42} variant="light" />
+          <span>GuideCare</span>
+        </Link>
+        <h1>Start your health journey.</h1>
+        <p>
+          Create a free patient account. Check symptoms, find the right specialist, and book visits
+          at hospitals near you.
         </p>
+        <div className="auth-art-blob auth-art-blob-a" />
+        <div className="auth-art-blob auth-art-blob-b" />
+      </aside>
 
-        {success ? (
-          <p className="success">Account created! Redirecting to login...</p>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Name</label>
-              <input
-                required
-                value={form.name}
-                onChange={(e) => update('name', e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={(e) => update('email', e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                required
-                value={form.password}
-                onChange={(e) => update('password', e.target.value)}
-                placeholder="min 8 chars, 1 letter + 1 number"
-              />
-            </div>
+      <main className="auth-form-wrap">
+        <div className="auth-form">
+          <h2>Create a patient account</h2>
+          <p className="auth-sub">
+            Doctor and admin accounts are created by an administrator.
+          </p>
 
-            {error && <p className="error">{error}</p>}
+          {success ? (
+            <p className="success">Account created! Redirecting to sign in...</p>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => update('name', e.target.value)}
+                  placeholder="Your full name"
+                />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(e) => update('email', e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  required
+                  value={form.password}
+                  onChange={(e) => update('password', e.target.value)}
+                  placeholder="min 8 chars, 1 letter + 1 number"
+                />
+              </div>
 
-            <button type="submit" className="btn" disabled={submitting}>
-              {submitting ? 'Creating account...' : 'Register'}
-            </button>
-          </form>
-        )}
+              {error && <p className="error">{error}</p>}
 
-        <p className="form-footer">
-          Already have an account? <Link to="/login">Log in</Link>
-        </p>
-      </div>
+              <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={submitting}>
+                {submitting ? 'Creating account...' : 'Create account'}
+              </button>
+            </form>
+          )}
+
+          <p className="auth-foot">
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

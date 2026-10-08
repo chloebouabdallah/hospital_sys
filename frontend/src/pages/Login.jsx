@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
+import './Auth.css';
 
 export default function Login() {
   const { login } = useAuth();
@@ -25,44 +27,65 @@ export default function Login() {
   }
 
   return (
-    <div className="page-center">
-      <div className="card">
-        <h1>Log in</h1>
-        <p className="subtitle">Hospital FYP — patient/doctor/admin portal</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="sara@example.com"
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && <p className="error">{error}</p>}
-
-          <button type="submit" className="btn" disabled={submitting}>
-            {submitting ? 'Logging in...' : 'Log in'}
-          </button>
-        </form>
-
-        <p className="form-footer">
-          Don't have an account? <Link to="/register">Register</Link>
+    <div className="auth-split">
+      <aside className="auth-art">
+        <Link to="/" className="auth-logo">
+          <Logo size={42} variant="light" />
+          <span>GuideCare</span>
+        </Link>
+        <h1>Welcome back.</h1>
+        <p>
+          Pick up where you left off — check your appointments, book a visit, or run a symptom check.
         </p>
-      </div>
+        <div className="auth-art-blob auth-art-blob-a" />
+        <div className="auth-art-blob auth-art-blob-b" />
+      </aside>
+
+      <main className="auth-form-wrap">
+        <div className="auth-form">
+          <h2>Sign in</h2>
+          <p className="auth-sub">Use the email and password you registered with.</p>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError('');
+                }}
+                placeholder="sara@example.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError('');
+                }}
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && <p className="error">{error}</p>}
+
+            <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={submitting}>
+              {submitting ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+
+          <p className="auth-foot">
+            Don't have an account? <Link to="/register">Create one</Link>
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

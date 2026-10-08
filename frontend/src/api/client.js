@@ -6,7 +6,7 @@ async function request(path, { method = 'GET', body } = {}) {
   const res = await fetch(`${BASE_URL}/api${path}`, {
     method,
     headers,
-    credentials: 'include',       // send & receive cookies
+    credentials: 'include',
     body: body ? JSON.stringify(body) : undefined,
   });
 
@@ -28,8 +28,14 @@ async function request(path, { method = 'GET', body } = {}) {
 }
 
 export const api = {
+  // Auth
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   logout: () => request('/auth/logout', { method: 'POST' }),
   getMe: () => request('/users/me'),
+
+  // Public reads (used by the Home page for live stats)
+  getSpecialties: () => request('/specialties'),
+  getHospitals: () => request('/hospitals'),
+  getDoctors: () => request('/doctors'),
 };
