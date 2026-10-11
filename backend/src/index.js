@@ -18,6 +18,7 @@ const triageRuleRoutes = require('./routes/triage-rule.routes');
 const appointmentRoutes = require('./routes/appointment.routes');
 const availabilityRoutes = require('./routes/availability.routes');
 const reviewRoutes = require('./routes/review.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/api/triage-rules', triageRuleRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/doctor-availability', availabilityRoutes);
 app.use('/api/doctor-reviews', reviewRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Error handler (from Day 6) — put after all routes, before listen.
 app.use((err, req, res, next) => {

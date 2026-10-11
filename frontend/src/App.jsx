@@ -42,9 +42,13 @@ export default function App() {
             <Route path="users" element={<DashboardPlaceholder title="Users" description="Manage accounts." />} />
             <Route path="doctors" element={<DashboardPlaceholder title="Doctors" description="Provision doctors and link hospitals." />} />
             <Route path="hospitals" element={<DashboardPlaceholder title="Hospitals" description="Manage hospital records." />} />
+            <Route path="schedules" element={<DashboardPlaceholder title="Schedules" description="Doctor availability across hospitals." />} />
+            <Route path="specialties" element={<DashboardPlaceholder title="Specialties" description="Manage medical specialties." />} />
             <Route path="symptoms" element={<DashboardPlaceholder title="Symptoms" description="Manage the symptom checker question bank." />} />
+            <Route path="questions" element={<DashboardPlaceholder title="Questions" description="Follow-up questions per symptom." />} />
             <Route path="conditions" element={<DashboardPlaceholder title="Conditions" description="Manage conditions." />} />
             <Route path="rules" element={<DashboardPlaceholder title="Triage rules" description="Manage the rule engine." />} />
+            <Route path="reviews" element={<DashboardPlaceholder title="Reviews" description="Moderate patient reviews." />} />
 
             {/* Shared */}
             <Route path="profile" element={<DashboardPlaceholder title="Profile" description="Your account details." />} />

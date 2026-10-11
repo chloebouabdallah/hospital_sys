@@ -1,21 +1,32 @@
+/* =========================================================
+   Dashboard layout — sidebar uses the site's violet gradient
+   ========================================================= */
+
 .dl-shell {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* ---------- Sidebar ---------- */
 .dl-side {
-  background: var(--card);
-  border-right: 1px solid var(--line);
+  background: var(--grad);
+  color: #fff;
   padding: 22px 16px;
   display: flex;
   flex-direction: column;
   gap: 22px;
+  height: 100vh;
   position: sticky;
   top: 0;
-  height: 100vh;
   overflow-y: auto;
+  /* Hide scrollbar */
+  scrollbar-width: none;         /* Firefox */
+  -ms-overflow-style: none;      /* IE / old Edge */
+}
+
+.dl-side::-webkit-scrollbar {
+  display: none;                 /* Chrome / Safari / Edge */
 }
 
 .dl-brand {
@@ -26,24 +37,29 @@
   font-weight: 800;
   font-size: 20px;
   text-decoration: none;
-  color: var(--ink);
+  color: #fff;
   padding: 4px 8px;
+}
+
+/* Make the logo itself white on the gradient sidebar */
+.dl-brand svg path {
+  stroke: #fff;
 }
 
 .dl-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
 }
 
 .dl-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
+  gap: 12px;
+  padding: 10px 12px;
   border-radius: 10px;
-  color: var(--mut);
+  color: #ffffffcc;
   font-weight: 500;
   font-size: 14px;
   text-decoration: none;
@@ -51,23 +67,31 @@
 }
 
 .dl-link:hover {
-  background: var(--soft);
-  color: var(--ink);
-}
-
-.dl-link.is-active {
-  background: var(--grad);
+  background: #ffffff1f;
   color: #fff;
 }
 
+/* Active item on a gradient sidebar: white card with violet text
+   for contrast against the coloured background. */
+.dl-link.is-active {
+  background: #fff;
+  color: var(--v);
+  font-weight: 700;
+  box-shadow: 0 6px 16px #00000022;
+}
+
 .dl-link-icon {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
-  text-align: center;
+  height: 20px;
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .dl-side-foot {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid #ffffff33;
   padding-top: 16px;
 }
 
@@ -75,7 +99,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--mut);
+  color: #ffffffb3;
   margin: 0 0 4px;
 }
 
@@ -86,6 +110,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #fff;
 }
 
 .dl-badge {
@@ -96,13 +121,11 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  background: #ffffff2e;
+  color: #fff;
 }
 
-.dl-badge-patient { background: #dbeafe; color: #1d4ed8; }
-.dl-badge-doctor  { background: #ede9fe; color: #6d28d9; }
-.dl-badge-admin   { background: #fce7f3; color: #be185d; }
-
-/* Main column */
+/* ---------- Main column ---------- */
 .dl-main {
   display: flex;
   flex-direction: column;
@@ -135,14 +158,13 @@
   margin: 0 auto;
 }
 
-/* Mobile */
+/* ---------- Mobile ---------- */
 @media (max-width: 800px) {
   .dl-shell {
     grid-template-columns: 1fr;
   }
   .dl-side {
-    position: static;
-    height: auto;
+    min-height: 0;
     flex-direction: row;
     align-items: center;
     gap: 12px;

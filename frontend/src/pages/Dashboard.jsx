@@ -1,11 +1,12 @@
 import { useAuth } from '../context/AuthContext';
+import AdminOverview from './admin/AdminOverview';
 
 export default function Dashboard() {
   const { user } = useAuth();
   if (!user) return null;
 
   if (user.role === 'doctor') return <DoctorHome user={user} />;
-  if (user.role === 'admin') return <AdminHome user={user} />;
+  if (user.role === 'admin') return <AdminOverview />;
   return <PatientHome user={user} />;
 }
 
@@ -61,50 +62,6 @@ function DoctorHome({ user }) {
           <div className="pg-card-icon">🧑‍🤝‍🧑</div>
           <h3>My patients</h3>
           <p>See the patients you've seen.</p>
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function AdminHome({ user }) {
-  return (
-    <div>
-      <header className="pg-head">
-        <h1>Admin console.</h1>
-        <p className="pg-sub">Manage users, doctors, hospitals and the triage engine.</p>
-      </header>
-
-      <div className="pg-cards">
-        <a href="/dashboard/users" className="pg-card">
-          <div className="pg-card-icon">👥</div>
-          <h3>Users</h3>
-          <p>Browse, edit, or remove patient, doctor, and admin accounts.</p>
-        </a>
-        <a href="/dashboard/doctors" className="pg-card">
-          <div className="pg-card-icon">🩺</div>
-          <h3>Doctors</h3>
-          <p>Provision doctors and link them to hospitals.</p>
-        </a>
-        <a href="/dashboard/hospitals" className="pg-card">
-          <div className="pg-card-icon">🏥</div>
-          <h3>Hospitals</h3>
-          <p>Manage hospital records and locations.</p>
-        </a>
-        <a href="/dashboard/symptoms" className="pg-card">
-          <div className="pg-card-icon">🤒</div>
-          <h3>Symptoms</h3>
-          <p>Manage the symptom checker question bank.</p>
-        </a>
-        <a href="/dashboard/conditions" className="pg-card">
-          <div className="pg-card-icon">📖</div>
-          <h3>Conditions</h3>
-          <p>Manage conditions and their linked information.</p>
-        </a>
-        <a href="/dashboard/rules" className="pg-card">
-          <div className="pg-card-icon">⚙️</div>
-          <h3>Triage rules</h3>
-          <p>Manage the rules that drive the symptom checker's recommendations.</p>
         </a>
       </div>
     </div>

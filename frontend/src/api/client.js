@@ -38,4 +38,5 @@ export const api = {
   getSpecialties: () => request('/specialties'),
   getHospitals: () => request('/hospitals'),
   getDoctors: () => request('/doctors'),
+  getAdminOverview: () => request('/admin/overview'),
 };
