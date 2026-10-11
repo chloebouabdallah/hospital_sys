@@ -12,6 +12,9 @@ import AdminAppointments from './pages/admin/AdminAppointments';
 import AdminDoctors from './pages/admin/AdminDoctors';
 import AdminHospitals from './pages/admin/AdminHospitals';
 import AdminSchedules from './pages/admin/AdminSchedules';
+import AdminSpecialties from './pages/admin/AdminSpecialties';
+import AdminSymptoms from './pages/admin/AdminSymptoms';
+import AdminUsers from './pages/admin/AdminUsers';
 
 export default function App() {
   return (
@@ -42,12 +45,12 @@ export default function App() {
             <Route path="patients" element={<DashboardPlaceholder title="My patients" description="People you've seen." />} />
 
             {/* Admin */}
-            <Route path="users" element={<DashboardPlaceholder title="Users" description="Manage accounts." />} />
+            <Route path="users" element={<AdminUsers />} />
             <Route path="doctors" element={<AdminDoctors />} />          
             <Route path="hospitals" element={<AdminHospitals />} />
             <Route path="schedules" element={<AdminSchedules />} /> 
-            <Route path="specialties" element={<DashboardPlaceholder title="Specialties" description="Manage medical specialties." />} />
-            <Route path="symptoms" element={<DashboardPlaceholder title="Symptoms" description="Manage the symptom checker question bank." />} />
+            <Route path="specialties" element={<AdminSpecialties />} /> 
+            <Route path="symptoms" element={<AdminSymptoms />} />
             <Route path="questions" element={<DashboardPlaceholder title="Questions" description="Follow-up questions per symptom." />} />
             <Route path="conditions" element={<DashboardPlaceholder title="Conditions" description="Manage conditions." />} />
             <Route path="rules" element={<DashboardPlaceholder title="Triage rules" description="Manage the rule engine." />} />

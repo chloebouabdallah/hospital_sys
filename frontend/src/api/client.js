@@ -34,10 +34,12 @@ export const api = {
   logout: () => request('/auth/logout', { method: 'POST' }),
   getMe: () => request('/users/me'),
 
-  // ---------- Public reads (Home page stats) ----------
+  // ---------- Public reads ----------
   getSpecialties: () => request('/specialties'),
   getHospitals: () => request('/hospitals'),
   getDoctors: () => request('/doctors'),
+  getSymptoms: () => request('/symptoms'),
+  getConditions: () => request('/conditions'),
 
   // ---------- Admin: overview ----------
   getAdminOverview: () => request('/admin/overview'),
@@ -49,26 +51,74 @@ export const api = {
   completeAppointment: (id) => request(`/appointments/${id}/complete`, { method: 'PATCH' }),
   cancelAppointment: (id) => request(`/appointments/${id}/cancel`, { method: 'PATCH' }),
 
-  // ---------- Available slots (for booking modal) ----------
+  // ---------- Available slots ----------
   getAvailableSlots: (doctorId, date, hospitalId) =>
     request(`/doctors/${doctorId}/available-slots?date=${date}&hospitalId=${hospitalId}`),
 
-  // ---------- Lookups (for New appointment modal) ----------
+  // ---------- Patients lookup ----------
   getPatients: () => request('/users?role=patient'),
 
+  // ---------- Doctors (admin CRUD; reads are public) ----------
   getDoctorById: (id) => request(`/doctors/${id}`),
-createDoctor: (payload) => request('/doctors', { method: 'POST', body: payload }),
-updateDoctor: (id, payload) => request(`/doctors/${id}`, { method: 'PATCH', body: payload }),
-deleteDoctor: (id) => request(`/doctors/${id}`, { method: 'DELETE' }),
+  createDoctor: (payload) => request('/doctors', { method: 'POST', body: payload }),
+  updateDoctor: (id, payload) => request(`/doctors/${id}`, { method: 'PATCH', body: payload }),
+  deleteDoctor: (id) => request(`/doctors/${id}`, { method: 'DELETE' }),
 
- // ---------- Hospitals (admin CRUD; reads are public) ----------
-getHospitalById: (id) => request(`/hospitals/${id}`),
-createHospital: (payload) => request('/hospitals', { method: 'POST', body: payload }),
-updateHospital: (id, payload) => request(`/hospitals/${id}`, { method: 'PUT', body: payload }),
-deleteHospital: (id) => request(`/hospitals/${id}`, { method: 'DELETE' }),
+  // ---------- Hospitals (admin CRUD; reads are public) ----------
+  getHospitalById: (id) => request(`/hospitals/${id}`),
+  createHospital: (payload) => request('/hospitals', { method: 'POST', body: payload }),
+  updateHospital: (id, payload) => request(`/hospitals/${id}`, { method: 'PUT', body: payload }),
+  deleteHospital: (id) => request(`/hospitals/${id}`, { method: 'DELETE' }),
 
-getAvailability: (params = '') => request(`/doctor-availability${params}`),
-createAvailability: (payload) => request('/doctor-availability', { method: 'POST', body: payload }),
-updateAvailability: (id, payload) => request(`/doctor-availability/${id}`, { method: 'PUT', body: payload }),
-deleteAvailability: (id) => request(`/doctor-availability/${id}`, { method: 'DELETE' }),
+  // ---------- Doctor availability / schedules ----------
+  getAvailability: (params = '') => request(`/doctor-availability${params}`),
+  createAvailability: (payload) => request('/doctor-availability', { method: 'POST', body: payload }),
+  updateAvailability: (id, payload) => request(`/doctor-availability/${id}`, { method: 'PUT', body: payload }),
+  deleteAvailability: (id) => request(`/doctor-availability/${id}`, { method: 'DELETE' }),
+
+  // ---------- Specialties (admin CRUD; reads are public) ----------
+  getSpecialtyById: (id) => request(`/specialties/${id}`),
+  createSpecialty: (payload) => request('/specialties', { method: 'POST', body: payload }),
+  updateSpecialty: (id, payload) => request(`/specialties/${id}`, { method: 'PATCH', body: payload }),
+  deleteSpecialty: (id) => request(`/specialties/${id}`, { method: 'DELETE' }),
+
+  // ---------- Symptoms (admin CRUD) ----------
+  getSymptomById: (id) => request(`/symptoms/${id}`),
+  createSymptom: (payload) => request('/symptoms', { method: 'POST', body: payload }),
+  updateSymptom: (id, payload) => request(`/symptoms/${id}`, { method: 'PUT', body: payload }),
+  deleteSymptom: (id) => request(`/symptoms/${id}`, { method: 'DELETE' }),
+
+  // ---------- Questions ----------
+  getSymptomQuestions: (symptomId) => request(`/symptoms/${symptomId}/questions`),
+  getQuestions: (params = '') => request(`/symptom-questions${params}`),
+  createQuestion: (payload) => request('/symptom-questions', { method: 'POST', body: payload }),
+  updateQuestion: (id, payload) => request(`/symptom-questions/${id}`, { method: 'PUT', body: payload }),
+  deleteQuestion: (id) => request(`/symptom-questions/${id}`, { method: 'DELETE' }),
+
+  // ---------- Options ----------
+  getOptions: (params = '') => request(`/symptom-question-options${params}`),
+  createOption: (payload) => request('/symptom-question-options', { method: 'POST', body: payload }),
+  updateOption: (id, payload) => request(`/symptom-question-options/${id}`, { method: 'PUT', body: payload }),
+  deleteOption: (id) => request(`/symptom-question-options/${id}`, { method: 'DELETE' }),
+
+  // ---------- Conditions ----------
+  getConditionById: (id) => request(`/conditions/${id}`),
+  createCondition: (payload) => request('/conditions', { method: 'POST', body: payload }),
+  updateCondition: (id, payload) => request(`/conditions/${id}`, { method: 'PUT', body: payload }),
+  deleteCondition: (id) => request(`/conditions/${id}`, { method: 'DELETE' }),
+
+  // ---------- Triage rules ----------
+  getTriageRules: (params = '') => request(`/triage-rules${params}`),
+  createTriageRule: (payload) => request('/triage-rules', { method: 'POST', body: payload }),
+  updateTriageRule: (id, payload) => request(`/triage-rules/${id}`, { method: 'PUT', body: payload }),
+  deleteTriageRule: (id) => request(`/triage-rules/${id}`, { method: 'DELETE' }),
+
+  // ---------- Reviews (moderation) ----------
+  getDoctorReviews: (doctorId) => request(`/doctors/${doctorId}/reviews`),
+  hideReview: (id, hidden) => request(`/doctor-reviews/${id}/hide`, { method: 'PATCH', body: { hidden } }),
+
+  getUsers: (params = '') => request(`/users${params}`),
+getUserById: (id) => request(`/users/${id}`),
+updateUser: (id, payload) => request(`/users/${id}`, { method: 'PATCH', body: payload }),
+deleteUser: (id) => request(`/users/${id}`, { method: 'DELETE' }),
 };
