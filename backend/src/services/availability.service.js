@@ -28,14 +28,19 @@ function timeOnEpoch(hhmm) {
 // 00:00, 00:45, 01:30, ... yes. 00:15 no.
 function isAlignedToSlot(date) {
   const minutesSinceMidnight = date.getUTCHours() * 60 + date.getUTCMinutes();
-  return minutesSinceMidnight % SLOT_MINUTES === 0 && date.getUTCSeconds() === 0 && date.getUTCMilliseconds() === 0;
+  return (
+    minutesSinceMidnight % SLOT_MINUTES === 0 &&
+    date.getUTCSeconds() === 0 &&
+    date.getUTCMilliseconds() === 0
+  );
 }
 
-// Does the slot [date, date + 45min) fit entirely within [start, end)?
+// Does the slot [date, date + 45min) fit entirely within [start, end]?
 // start/end are Date objects from doctor_availability (1970-01-01 HH:MM).
+// We compare HH:MM strings, so this works even if the schedule blocks aren't
+// aligned to the global 45-min grid.
 function slotFitsInWindow(date, start, end) {
   const slotEnd = new Date(date.getTime() + SLOT_MS);
-  // Compare only HH:MM portions.
   const hhmm = timeHHMM(date);
   const hhmmEnd = timeHHMM(slotEnd);
   const startHHMM = timeHHMM(start);
@@ -65,7 +70,7 @@ async function findMatchingAvailability({ doctorId, hospitalId, dateTime }) {
 // Pending and confirmed block; cancelled and completed do not.
 // Considers all hospitals (a doctor can't be in two places at once).
 async function findConflictingAppointment({ doctorId, dateTime, excludeAppointmentId }) {
-  const windowStart = new Date(dateTime.getTime() - SLOT_MS + 1); // strictly less than 45 min apart
+  const windowStart = new Date(dateTime.getTime() - SLOT_MS + 1);
   const windowEnd = new Date(dateTime.getTime() + SLOT_MS - 1);
   const where = {
     doctorId,
@@ -78,6 +83,11 @@ async function findConflictingAppointment({ doctorId, dateTime, excludeAppointme
 
 // Enumerate all bookable 45-min slots for a doctor on a given date at a hospital,
 // excluding times already taken. Returns an array of ISO strings.
+//
+// IMPORTANT: slots are snapped to the global 45-min grid (00:00, 00:45, 01:30, ...).
+// The create endpoint validates with isAlignedToSlot, which requires this. Without
+// snapping, a doctor whose schedule starts at 10:00 would produce 10:00, 10:45, ...
+// — 10:00 is not aligned (600 % 45 !== 0), so the create endpoint would reject it.
 async function listSlots({ doctorId, hospitalId, date }) {
   const dow = date.getUTCDay();
   const blocks = await prisma.doctorAvailability.findMany({
@@ -100,17 +110,27 @@ async function listSlots({ doctorId, hospitalId, date }) {
 
   const now = Date.now();
   const slots = [];
+
   for (const b of blocks) {
     const startMins = b.startTime.getUTCHours() * 60 + b.startTime.getUTCMinutes();
     const endMins = b.endTime.getUTCHours() * 60 + b.endTime.getUTCMinutes();
-    for (let t = startMins; t + SLOT_MINUTES <= endMins; t += SLOT_MINUTES) {
+
+    // Snap the first slot to the next 45-min boundary from midnight UTC.
+    const firstAligned = Math.ceil(startMins / SLOT_MINUTES) * SLOT_MINUTES;
+
+    for (let t = firstAligned; t + SLOT_MINUTES <= endMins; t += SLOT_MINUTES) {
       const slot = new Date(dayStart);
       slot.setUTCHours(0, t, 0, 0);
-      if (slot.getTime() <= now) continue; // skip past slots
+
+      // Skip past slots (only for today).
+      if (slot.getTime() <= now) continue;
+
+      // Skip slots that clash with an existing pending/confirmed appointment.
       const clash = taken.some((a) => overlaps(a.dateTime, slot));
       if (!clash) slots.push(slot.toISOString());
     }
   }
+
   // In case multiple blocks produce the same time.
   return [...new Set(slots)].sort();
 }

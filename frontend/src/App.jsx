@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import DashboardPlaceholder from './pages/DashboardPlaceholder';
 import './pages/DashboardHome.css';
+import AdminAppointments from './pages/admin/AdminAppointments';
 
 export default function App() {
   return (
@@ -31,8 +32,7 @@ export default function App() {
             {/* Patient */}
             <Route path="symptom-checker" element={<DashboardPlaceholder title="Symptom checker" description="Answer a few questions and get a recommendation." />} />
             <Route path="find-care" element={<DashboardPlaceholder title="Find care nearby" description="Hospitals near you and the specialists they have." />} />
-            <Route path="appointments" element={<DashboardPlaceholder title="My appointments" description="Upcoming and past visits." />} />
-
+            <Route path="appointments" element={<AdminAppointments />} />
             {/* Doctor */}
             <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
             <Route path="schedule" element={<DashboardPlaceholder title="My schedule" description="Your hours per hospital." />} />

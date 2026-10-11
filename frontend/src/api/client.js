@@ -28,15 +28,31 @@ async function request(path, { method = 'GET', body } = {}) {
 }
 
 export const api = {
-  // Auth
+  // ---------- Auth ----------
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   logout: () => request('/auth/logout', { method: 'POST' }),
   getMe: () => request('/users/me'),
 
-  // Public reads (used by the Home page for live stats)
+  // ---------- Public reads (Home page stats) ----------
   getSpecialties: () => request('/specialties'),
   getHospitals: () => request('/hospitals'),
   getDoctors: () => request('/doctors'),
+
+  // ---------- Admin: overview ----------
   getAdminOverview: () => request('/admin/overview'),
+
+  // ---------- Appointments ----------
+  getAppointments: (params = '') => request(`/appointments${params}`),
+  createAppointment: (payload) => request('/appointments', { method: 'POST', body: payload }),
+  confirmAppointment: (id) => request(`/appointments/${id}/confirm`, { method: 'PATCH' }),
+  completeAppointment: (id) => request(`/appointments/${id}/complete`, { method: 'PATCH' }),
+  cancelAppointment: (id) => request(`/appointments/${id}/cancel`, { method: 'PATCH' }),
+
+  // ---------- Available slots (for booking modal) ----------
+  getAvailableSlots: (doctorId, date, hospitalId) =>
+    request(`/doctors/${doctorId}/available-slots?date=${date}&hospitalId=${hospitalId}`),
+
+  // ---------- Lookups (for New appointment modal) ----------
+  getPatients: () => request('/users?role=patient'),
 };
