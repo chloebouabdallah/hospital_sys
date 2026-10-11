@@ -60,4 +60,10 @@ export const api = {
 createDoctor: (payload) => request('/doctors', { method: 'POST', body: payload }),
 updateDoctor: (id, payload) => request(`/doctors/${id}`, { method: 'PATCH', body: payload }),
 deleteDoctor: (id) => request(`/doctors/${id}`, { method: 'DELETE' }),
+
+ // ---------- Hospitals (admin CRUD; reads are public) ----------
+getHospitalById: (id) => request(`/hospitals/${id}`),
+createHospital: (payload) => request('/hospitals', { method: 'POST', body: payload }),
+updateHospital: (id, payload) => request(`/hospitals/${id}`, { method: 'PUT', body: payload }),
+deleteHospital: (id) => request(`/hospitals/${id}`, { method: 'DELETE' }),
 };
