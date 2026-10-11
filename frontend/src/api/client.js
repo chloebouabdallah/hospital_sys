@@ -55,4 +55,9 @@ export const api = {
 
   // ---------- Lookups (for New appointment modal) ----------
   getPatients: () => request('/users?role=patient'),
+
+  getDoctorById: (id) => request(`/doctors/${id}`),
+createDoctor: (payload) => request('/doctors', { method: 'POST', body: payload }),
+updateDoctor: (id, payload) => request(`/doctors/${id}`, { method: 'PATCH', body: payload }),
+deleteDoctor: (id) => request(`/doctors/${id}`, { method: 'DELETE' }),
 };

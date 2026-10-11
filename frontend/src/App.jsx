@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import DashboardPlaceholder from './pages/DashboardPlaceholder';
 import './pages/DashboardHome.css';
 import AdminAppointments from './pages/admin/AdminAppointments';
+import AdminDoctors from './pages/admin/AdminDoctors';
 
 export default function App() {
   return (
@@ -40,7 +41,7 @@ export default function App() {
 
             {/* Admin */}
             <Route path="users" element={<DashboardPlaceholder title="Users" description="Manage accounts." />} />
-            <Route path="doctors" element={<DashboardPlaceholder title="Doctors" description="Provision doctors and link hospitals." />} />
+            <Route path="doctors" element={<AdminDoctors />} />          
             <Route path="hospitals" element={<DashboardPlaceholder title="Hospitals" description="Manage hospital records." />} />
             <Route path="schedules" element={<DashboardPlaceholder title="Schedules" description="Doctor availability across hospitals." />} />
             <Route path="specialties" element={<DashboardPlaceholder title="Specialties" description="Manage medical specialties." />} />

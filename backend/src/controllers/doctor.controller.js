@@ -1,13 +1,13 @@
 const bcrypt = require('bcrypt');
 const prisma = require('../lib/prisma');
+const { summarize } = require('../services/rating.service');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ---- POST /doctors (admin only) ----
-// Creates a User (role='doctor') AND the linked Doctor record together.
 async function createDoctor(req, res) {
   try {
-    const { name, email, password, specialtyId, bio, yearsExperience } = req.body;
+    const { name, email, password, specialtyId, bio, yearsExperience, hospitalIds } = req.body;
 
     if (!name || !email || !password || !specialtyId) {
       return res.status(400).json({
@@ -29,10 +29,22 @@ async function createDoctor(req, res) {
       return res.status(400).json({ error: 'specialtyId does not match a real specialty.' });
     }
 
+    let hospitalIdList = [];
+    if (hospitalIds !== undefined) {
+      if (!Array.isArray(hospitalIds) || hospitalIds.some((id) => !Number.isInteger(id))) {
+        return res.status(400).json({ error: 'hospitalIds must be an array of integers.' });
+      }
+      hospitalIdList = [...new Set(hospitalIds)];
+      if (hospitalIdList.length > 0) {
+        const found = await prisma.hospital.count({ where: { id: { in: hospitalIdList } } });
+        if (found !== hospitalIdList.length) {
+          return res.status(400).json({ error: 'hospitalIds contains an id that is not a real hospital.' });
+        }
+      }
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Transaction: if either create fails, both roll back — we never want
-    // a doctor User floating around with no linked Doctor record, or vice versa.
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: { name, email, passwordHash, role: 'doctor' },
@@ -47,6 +59,12 @@ async function createDoctor(req, res) {
         },
       });
 
+      if (hospitalIdList.length > 0) {
+        await tx.doctorHospital.createMany({
+          data: hospitalIdList.map((hospitalId) => ({ doctorId: doctor.id, hospitalId })),
+        });
+      }
+
       return { user, doctor };
     });
 
@@ -59,6 +77,7 @@ async function createDoctor(req, res) {
         specialtyId: result.doctor.specialtyId,
         bio: result.doctor.bio,
         yearsExperience: result.doctor.yearsExperience,
+        hospitalIds: hospitalIdList,
       },
     });
   } catch (err) {
@@ -67,7 +86,7 @@ async function createDoctor(req, res) {
   }
 }
 
-// ---- GET /doctors (public — doctor search) ----
+// ---- GET /doctors (public) ----
 async function getAllDoctors(req, res) {
   try {
     const { specialtyId } = req.query;
@@ -82,18 +101,41 @@ async function getAllDoctors(req, res) {
         bio: true,
         yearsExperience: true,
         specialty: { select: { id: true, name: true } },
-        user: { select: { name: true } }, // never expose email/passwordHash publicly
+        user: { select: { name: true } },
+        hospitals: {
+          select: {
+            hospital: { select: { id: true, name: true } },
+          },
+        },
+        doctorReviews: {
+          where: { status: 'visible' },
+          select: { rating: true },
+        },
       },
     });
 
-    return res.status(200).json({ doctors });
+    const shaped = doctors.map((d) => {
+      const summary = summarize(d.doctorReviews.map((r) => r.rating));
+      return {
+        id: d.id,
+        bio: d.bio,
+        yearsExperience: d.yearsExperience,
+        specialty: d.specialty,
+        user: d.user,
+        hospitals: d.hospitals,
+        avgRating: summary.average,
+        reviewCount: summary.count,
+      };
+    });
+
+    return res.status(200).json({ doctors: shaped });
   } catch (err) {
     console.error('getAllDoctors error:', err);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 }
 
-// ---- GET /doctors/:id (public — doctor profile page) ----
+// ---- GET /doctors/:id (public) ----
 async function getDoctorById(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
@@ -106,8 +148,18 @@ async function getDoctorById(req, res) {
         yearsExperience: true,
         specialty: { select: { id: true, name: true } },
         user: { select: { name: true } },
+        hospitals: {
+          select: {
+            hospital: { select: { id: true, name: true, city: true } },
+          },
+        },
         availability: {
-          select: { dayOfWeek: true, startTime: true, endTime: true, isAvailable: true },
+          select: {
+            dayOfWeek: true,
+            startTime: true,
+            endTime: true,
+            isAvailable: true,
+          },
         },
       },
     });
@@ -127,7 +179,7 @@ async function getDoctorById(req, res) {
 async function updateDoctor(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { bio, yearsExperience, specialtyId } = req.body;
+    const { bio, yearsExperience, specialtyId, hospitalIds } = req.body;
 
     const existing = await prisma.doctor.findUnique({ where: { id } });
     if (!existing) {
@@ -138,8 +190,6 @@ async function updateDoctor(req, res) {
     if (bio !== undefined) data.bio = bio;
     if (yearsExperience !== undefined) data.yearsExperience = yearsExperience;
 
-    // Only admin may reassign specialty — a doctor changing their own
-    // specialty is exactly the kind of self-service abuse we want to prevent.
     if (specialtyId !== undefined) {
       if (req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Only an admin can change a doctor\'s specialty.' });
@@ -151,15 +201,45 @@ async function updateDoctor(req, res) {
       data.specialtyId = specialtyId;
     }
 
-    const updated = await prisma.doctor.update({
-      where: { id },
-      data,
-      select: {
-        id: true,
-        bio: true,
-        yearsExperience: true,
-        specialty: { select: { id: true, name: true } },
-      },
+    let hospitalIdList;
+    if (hospitalIds !== undefined) {
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Only an admin can change a doctor\'s hospitals.' });
+      }
+      if (!Array.isArray(hospitalIds) || hospitalIds.some((id) => !Number.isInteger(id))) {
+        return res.status(400).json({ error: 'hospitalIds must be an array of integers.' });
+      }
+      hospitalIdList = [...new Set(hospitalIds)];
+      if (hospitalIdList.length > 0) {
+        const found = await prisma.hospital.count({ where: { id: { in: hospitalIdList } } });
+        if (found !== hospitalIdList.length) {
+          return res.status(400).json({ error: 'hospitalIds contains an id that is not a real hospital.' });
+        }
+      }
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const doc = await tx.doctor.update({
+        where: { id },
+        data,
+        select: {
+          id: true,
+          bio: true,
+          yearsExperience: true,
+          specialty: { select: { id: true, name: true } },
+        },
+      });
+
+      if (hospitalIdList !== undefined) {
+        await tx.doctorHospital.deleteMany({ where: { doctorId: id } });
+        if (hospitalIdList.length > 0) {
+          await tx.doctorHospital.createMany({
+            data: hospitalIdList.map((hospitalId) => ({ doctorId: id, hospitalId })),
+          });
+        }
+      }
+
+      return doc;
     });
 
     return res.status(200).json({ doctor: updated });
@@ -179,10 +259,6 @@ async function deleteDoctor(req, res) {
       return res.status(404).json({ error: 'Doctor not found.' });
     }
 
-    // Deleting the Doctor record only. The linked User (and its login) stays
-    // intact unless you explicitly also delete the user — deciding that
-    // for you here would silently kill their login, which is a bigger call
-    // than "remove them from doctor search." Flag if you want cascading delete instead.
     await prisma.doctor.delete({ where: { id } });
 
     return res.status(200).json({ message: 'Doctor deleted.' });
