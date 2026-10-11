@@ -66,4 +66,9 @@ getHospitalById: (id) => request(`/hospitals/${id}`),
 createHospital: (payload) => request('/hospitals', { method: 'POST', body: payload }),
 updateHospital: (id, payload) => request(`/hospitals/${id}`, { method: 'PUT', body: payload }),
 deleteHospital: (id) => request(`/hospitals/${id}`, { method: 'DELETE' }),
+
+getAvailability: (params = '') => request(`/doctor-availability${params}`),
+createAvailability: (payload) => request('/doctor-availability', { method: 'POST', body: payload }),
+updateAvailability: (id, payload) => request(`/doctor-availability/${id}`, { method: 'PUT', body: payload }),
+deleteAvailability: (id) => request(`/doctor-availability/${id}`, { method: 'DELETE' }),
 };
