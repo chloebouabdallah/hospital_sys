@@ -306,7 +306,14 @@
   text-align: center;
 }
 .hm-cta h2 { font-size: clamp(26px, 4vw, 40px); margin-bottom: 16px; }
-.hm-cta .btn { color: #0e1a33; }
+.hm-cta .btn {
+  background: #fff;
+  color: #0e1a33;
+  border: 0;
+}
+.hm-cta .btn:hover {
+  background: #f1f5f9;
+}
 
 .hm-foot {
   padding: 0 5vw 40px;
