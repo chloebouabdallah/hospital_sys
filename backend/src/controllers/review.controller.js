@@ -241,6 +241,52 @@ async function getDoctorReviews(req, res) {
   }
 }
 
+// ---- GET /admin/reviews (admin only) ----
+// Returns every review, visible AND hidden, with patient + doctor resolved.
+async function getAllReviews(req, res) {
+  try {
+    const reviews = await prisma.doctorReview.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        status: true,
+        createdAt: true,
+        appointmentId: true,
+        patient: { select: { id: true, name: true } },
+        doctor: {
+          select: {
+            id: true,
+            user: { select: { name: true } },
+            specialty: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    const shaped = reviews.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment,
+      status: r.status,
+      createdAt: r.createdAt,
+      appointmentId: r.appointmentId,
+      patient: r.patient,
+      doctor: {
+        id: r.doctor.id,
+        name: r.doctor.user?.name ?? 'Unknown',
+        specialty: r.doctor.specialty?.name ?? null,
+      },
+    }));
+
+    return res.status(200).json({ reviews: shaped });
+  } catch (err) {
+    console.error('getAllReviews error:', err);
+    return res.status(500).json({ error: 'Something went wrong.' });
+  }
+}
+
 // ---- PATCH /doctor-reviews/:id/hide (admin) ----
 async function moderateReview(req, res) {
   try {
@@ -273,5 +319,6 @@ module.exports = {
   updateReview,
   deleteReview,
   getDoctorReviews,
+  getAllReviews,
   moderateReview,
 };

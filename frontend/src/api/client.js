@@ -114,8 +114,9 @@ export const api = {
   deleteTriageRule: (id) => request(`/triage-rules/${id}`, { method: 'DELETE' }),
 
   // ---------- Reviews (moderation) ----------
-  getDoctorReviews: (doctorId) => request(`/doctors/${doctorId}/reviews`),
-  hideReview: (id, hidden) => request(`/doctor-reviews/${id}/hide`, { method: 'PATCH', body: { hidden } }),
+  // ---------- Reviews (moderation) ----------
+getAllReviews: () => request('/admin/reviews'),
+hideReview: (id, hidden) => request(`/doctor-reviews/${id}/hide`, { method: 'PATCH', body: { hidden } }),
 
   getUsers: (params = '') => request(`/users${params}`),
 getUserById: (id) => request(`/users/${id}`),

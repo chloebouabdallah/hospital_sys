@@ -16,6 +16,9 @@ import AdminSpecialties from './pages/admin/AdminSpecialties';
 import AdminSymptoms from './pages/admin/AdminSymptoms';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminQuestions from './pages/admin/AdminQuestions';
+import AdminConditions from './pages/admin/AdminConditions';
+import AdminTriageRules from './pages/admin/AdminTriageRules';
+import AdminReviews from './pages/admin/AdminReviews';
 
 export default function App() {
   return (
@@ -53,9 +56,9 @@ export default function App() {
             <Route path="specialties" element={<AdminSpecialties />} /> 
             <Route path="symptoms" element={<AdminSymptoms />} />
             <Route path="questions" element={<AdminQuestions />} />
-            <Route path="conditions" element={<DashboardPlaceholder title="Conditions" description="Manage conditions." />} />
-            <Route path="rules" element={<DashboardPlaceholder title="Triage rules" description="Manage the rule engine." />} />
-            <Route path="reviews" element={<DashboardPlaceholder title="Reviews" description="Moderate patient reviews." />} />
+            <Route path="conditions" element={<AdminConditions />} />
+            <Route path="rules" element={<AdminTriageRules />} />
+            <Route path="reviews" element={<AdminReviews />} />
 
             {/* Shared */}
             <Route path="profile" element={<DashboardPlaceholder title="Profile" description="Your account details." />} />
