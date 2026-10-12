@@ -15,6 +15,7 @@ import AdminSchedules from './pages/admin/AdminSchedules';
 import AdminSpecialties from './pages/admin/AdminSpecialties';
 import AdminSymptoms from './pages/admin/AdminSymptoms';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminQuestions from './pages/admin/AdminQuestions';
 
 export default function App() {
   return (
@@ -51,7 +52,7 @@ export default function App() {
             <Route path="schedules" element={<AdminSchedules />} /> 
             <Route path="specialties" element={<AdminSpecialties />} /> 
             <Route path="symptoms" element={<AdminSymptoms />} />
-            <Route path="questions" element={<DashboardPlaceholder title="Questions" description="Follow-up questions per symptom." />} />
+            <Route path="questions" element={<AdminQuestions />} />
             <Route path="conditions" element={<DashboardPlaceholder title="Conditions" description="Manage conditions." />} />
             <Route path="rules" element={<DashboardPlaceholder title="Triage rules" description="Manage the rule engine." />} />
             <Route path="reviews" element={<DashboardPlaceholder title="Reviews" description="Moderate patient reviews." />} />

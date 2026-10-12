@@ -121,4 +121,16 @@ export const api = {
 getUserById: (id) => request(`/users/${id}`),
 updateUser: (id, payload) => request(`/users/${id}`, { method: 'PATCH', body: payload }),
 deleteUser: (id) => request(`/users/${id}`, { method: 'DELETE' }),
+
+
+getSymptoms: () => request('/symptoms'),
+getQuestions: (params = '') => request(`/symptom-questions${params}`),
+createQuestion: (payload) => request('/symptom-questions', { method: 'POST', body: payload }),
+updateQuestion: (id, payload) => request(`/symptom-questions/${id}`, { method: 'PUT', body: payload }),
+deleteQuestion: (id) => request(`/symptom-questions/${id}`, { method: 'DELETE' }),
+
+getOptions: (params = '') => request(`/symptom-question-options${params}`),
+createOption: (payload) => request('/symptom-question-options', { method: 'POST', body: payload }),
+updateOption: (id, payload) => request(`/symptom-question-options/${id}`, { method: 'PUT', body: payload }),
+deleteOption: (id) => request(`/symptom-question-options/${id}`, { method: 'DELETE' }),
 };

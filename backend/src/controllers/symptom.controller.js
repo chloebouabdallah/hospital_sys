@@ -34,13 +34,31 @@ async function createSymptom(req, res) {
 }
 
 // ---- GET /symptoms (patient / doctor / admin) ----
+// Now includes questionCount and ruleCount for the admin table.
 async function getAllSymptoms(req, res) {
   try {
     const symptoms = await prisma.symptom.findMany({
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            questions: true,
+            triageRules: true,
+          },
+        },
+      },
       orderBy: { name: 'asc' },
     });
-    return res.status(200).json({ symptoms });
+
+    const shaped = symptoms.map((s) => ({
+      id: s.id,
+      name: s.name,
+      questionCount: s._count.questions,
+      ruleCount: s._count.triageRules,
+    }));
+
+    return res.status(200).json({ symptoms: shaped });
   } catch (err) {
     console.error('getAllSymptoms error:', err);
     return res.status(500).json({ error: 'Something went wrong.' });
@@ -128,9 +146,6 @@ async function deleteSymptom(req, res) {
       return res.status(404).json({ error: 'Symptom not found.' });
     }
 
-    // Your schema uses ON DELETE CASCADE for symptom_questions (and their options),
-    // condition_symptoms and triage_rules, so deleting a symptom also removes all
-    // of those. That matches the schema's intent, so we don't block it here.
     await prisma.symptom.delete({ where: { id } });
 
     return res.status(200).json({ message: 'Symptom deleted.' });

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/client';
 
-// ---------- Inline styles ----------
 const CSS = `
 .sym-page { display: flex; flex-direction: column; gap: 22px; }
 
@@ -55,6 +54,18 @@ const CSS = `
   text-decoration: none;
 }
 .sym-questions-link:hover { text-decoration: underline; }
+
+.sym-count {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--v);
+  font-weight: 700;
+  font-size: 12px;
+}
 
 .sym-col-actions { text-align: right; white-space: nowrap; }
 .sym-col-actions .btn { margin-left: 6px; }
@@ -129,7 +140,6 @@ const CSS = `
 }
 `;
 
-// ---------- Page ----------
 export default function AdminSymptoms() {
   const [symptoms, setSymptoms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -142,7 +152,7 @@ export default function AdminSymptoms() {
     setLoading(true);
     setError('');
     try {
-      const res = await api.getSymptoms ? await api.getSymptoms() : await api.getSpecialties() && await fetchSymptoms();
+      const res = await api.getSymptoms();
       setSymptoms(res.symptoms || []);
     } catch (err) {
       setError(err.data?.error || 'Could not load symptoms.');
@@ -191,8 +201,9 @@ export default function AdminSymptoms() {
           <table className="sym-table">
             <thead>
               <tr>
-                <th style={{ width: '35%' }}>Name</th>
-                <th>Follow-up questions</th>
+                <th style={{ width: '40%' }}>Name</th>
+                <th>Questions</th>
+                <th>Rules</th>
                 <th className="sym-col-actions"></th>
               </tr>
             </thead>
@@ -203,9 +214,15 @@ export default function AdminSymptoms() {
                     <p className="sym-name">{s.name}</p>
                   </td>
                   <td>
-                    <Link to={`/dashboard/questions?symptomId=${s.id}`} className="sym-questions-link">
-                      Manage questions →
+                    <Link
+                      to={`/dashboard/questions?symptomId=${s.id}`}
+                      className="sym-questions-link"
+                    >
+                      {s.questionCount ?? 0} question{(s.questionCount ?? 0) === 1 ? '' : 's'} →
                     </Link>
+                  </td>
+                  <td>
+                    <span className="sym-count">{s.ruleCount ?? 0}</span>
                   </td>
                   <td className="sym-col-actions">
                     <button className="btn btn-sm" onClick={() => setEditing(s)}>Edit</button>
@@ -242,7 +259,6 @@ export default function AdminSymptoms() {
   );
 }
 
-// ---------- Create / Edit modal ----------
 function SymptomModal({ existing, onClose, onSaved }) {
   const isEdit = !!existing;
   const [name, setName] = useState(existing?.name ?? '');
@@ -259,11 +275,8 @@ function SymptomModal({ existing, onClose, onSaved }) {
     setSubmitting(true);
     try {
       const payload = { name: name.trim() };
-      if (isEdit) {
-        await api.updateSymptom(existing.id, payload);
-      } else {
-        await api.createSymptom(payload);
-      }
+      if (isEdit) await api.updateSymptom(existing.id, payload);
+      else await api.createSymptom(payload);
       onSaved();
     } catch (err) {
       setError(err.data?.error || 'Could not save symptom.');
