@@ -95,13 +95,14 @@ const Icon = {
 
 // ---- Nav items per role ----
 const NAV = {
-  patient: [
-    { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
-    { to: '/dashboard/symptom-checker', label: 'Symptom checker', Icon: Icon.Activity },
-    { to: '/dashboard/find-care', label: 'Find care', Icon: Icon.Hospital },
-    { to: '/dashboard/appointments', label: 'My appointments', Icon: Icon.Calendar },
-    { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
-  ],
+ patient: [
+  { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
+  { to: '/dashboard/symptom-checker', label: 'Symptom checker', Icon: Icon.Activity },
+  { to: '/dashboard/find-doctors', label: 'Find doctors', Icon: Icon.Doctor },
+  { to: '/dashboard/appointments', label: 'My appointments', Icon: Icon.Calendar },
+  { to: '/dashboard/hospitals', label: 'Hospitals', Icon: Icon.Hospital },
+  { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
+],
   doctor: [
     { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
     { to: '/dashboard/requests', label: 'Requests', Icon: Icon.Inbox },

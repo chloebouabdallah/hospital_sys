@@ -1,5 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import AdminOverview from './admin/AdminOverview';
+import PatientOverview from './patient/PatientOverview';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -7,7 +8,7 @@ export default function Dashboard() {
 
   if (user.role === 'doctor') return <DoctorHome user={user} />;
   if (user.role === 'admin') return <AdminOverview />;
-  return <PatientHome user={user} />;
+  return <PatientOverview />;
 }
 
 function PatientHome({ user }) {

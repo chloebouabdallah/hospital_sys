@@ -134,4 +134,7 @@ getOptions: (params = '') => request(`/symptom-question-options${params}`),
 createOption: (payload) => request('/symptom-question-options', { method: 'POST', body: payload }),
 updateOption: (id, payload) => request(`/symptom-question-options/${id}`, { method: 'PUT', body: payload }),
 deleteOption: (id) => request(`/symptom-question-options/${id}`, { method: 'DELETE' }),
+
+// ---------- Patient ----------
+getPatientOverview: () => request('/patient/overview'),
 };

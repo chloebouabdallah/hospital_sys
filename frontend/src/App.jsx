@@ -41,7 +41,8 @@ export default function App() {
 
             {/* Patient */}
             <Route path="symptom-checker" element={<DashboardPlaceholder title="Symptom checker" description="Answer a few questions and get a recommendation." />} />
-            <Route path="find-care" element={<DashboardPlaceholder title="Find care nearby" description="Hospitals near you and the specialists they have." />} />
+            <Route path="find-doctors" element={<DashboardPlaceholder title="Find doctors" description="Search for doctors by specialty or hospital." />} />
+            <Route path="patient-hospitals" element={<DashboardPlaceholder title="Hospitals" description="Browse hospitals near you." />} />
             <Route path="appointments" element={<AdminAppointments />} />
             {/* Doctor */}
             <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
