@@ -19,6 +19,9 @@ import AdminQuestions from './pages/admin/AdminQuestions';
 import AdminConditions from './pages/admin/AdminConditions';
 import AdminTriageRules from './pages/admin/AdminTriageRules';
 import AdminReviews from './pages/admin/AdminReviews';
+import SymptomChecker from './pages/patient/SymptomChecker';
+import FindDoctors from './pages/patient/FindDoctors';
+import MyAppointments from './pages/patient/MyAppointments';
 
 export default function App() {
   return (
@@ -40,10 +43,10 @@ export default function App() {
             <Route index element={<Dashboard />} />
 
             {/* Patient */}
-            <Route path="symptom-checker" element={<DashboardPlaceholder title="Symptom checker" description="Answer a few questions and get a recommendation." />} />
-            <Route path="find-doctors" element={<DashboardPlaceholder title="Find doctors" description="Search for doctors by specialty or hospital." />} />
+            <Route path="symptom-checker" element={<SymptomChecker />} />
+            <Route path="find-doctors" element={<FindDoctors />} />
             <Route path="patient-hospitals" element={<DashboardPlaceholder title="Hospitals" description="Browse hospitals near you." />} />
-            <Route path="appointments" element={<AdminAppointments />} />
+            <Route path="appointments" element={<MyAppointments />} />
             {/* Doctor */}
             <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
             <Route path="schedule" element={<DashboardPlaceholder title="My schedule" description="Your hours per hospital." />} />

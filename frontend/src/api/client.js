@@ -40,6 +40,8 @@ export const api = {
   getDoctors: () => request('/doctors'),
   getSymptoms: () => request('/symptoms'),
   getConditions: () => request('/conditions'),
+  getDoctors: (params = '') => request(`/doctors${params}`),
+  getDoctorReviews: (doctorId) => request(`/doctors/${doctorId}/reviews`),
 
   // ---------- Admin: overview ----------
   getAdminOverview: () => request('/admin/overview'),
@@ -50,6 +52,14 @@ export const api = {
   confirmAppointment: (id) => request(`/appointments/${id}/confirm`, { method: 'PATCH' }),
   completeAppointment: (id) => request(`/appointments/${id}/complete`, { method: 'PATCH' }),
   cancelAppointment: (id) => request(`/appointments/${id}/cancel`, { method: 'PATCH' }),
+
+  getAppointments: (params = '') => request(`/appointments${params}`),
+cancelAppointment: (id) => request(`/appointments/${id}/cancel`, { method: 'PATCH' }),
+
+// Reviews (patient side)
+getReviewForAppointment: (id) => request(`/appointments/${id}/review`),
+createReview: (id, payload) => request(`/appointments/${id}/review`, { method: 'POST', body: payload }),
+updateReview: (id, payload) => request(`/appointments/${id}/review`, { method: 'PUT', body: payload }),
 
   // ---------- Available slots ----------
   getAvailableSlots: (doctorId, date, hospitalId) =>
@@ -134,6 +144,11 @@ getOptions: (params = '') => request(`/symptom-question-options${params}`),
 createOption: (payload) => request('/symptom-question-options', { method: 'POST', body: payload }),
 updateOption: (id, payload) => request(`/symptom-question-options/${id}`, { method: 'PUT', body: payload }),
 deleteOption: (id) => request(`/symptom-question-options/${id}`, { method: 'DELETE' }),
+
+getSymptoms: () => request('/symptoms'),
+getSymptomQuestions: (symptomId) => request(`/symptoms/${symptomId}/questions`),
+submitChecker: (payload) => request('/symptom-checker/submit', { method: 'POST', body: payload }),
+getHospitalsNearby: (params) => request(`/hospitals/nearby?${params}`),
 
 // ---------- Patient ----------
 getPatientOverview: () => request('/patient/overview'),
