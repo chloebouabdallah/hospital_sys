@@ -161,4 +161,13 @@ getPatientOverview: () => request('/patient/overview'),
 
 getMe: () => request('/users/me'),
 updateUser: (id, payload) => request(`/users/${id}`, { method: 'PATCH', body: payload }),
+
+// ---------- Doctor ----------
+getDoctorOverview: () => request('/doctor/overview'),
+
+getMyDoctorProfile: () => request('/doctors/me'),
+getAvailability: (params = '') => request(`/doctor-availability${params}`),
+createAvailability: (payload) => request('/doctor-availability', { method: 'POST', body: payload }),
+updateAvailability: (id, payload) => request(`/doctor-availability/${id}`, { method: 'PUT', body: payload }),
+deleteAvailability: (id) => request(`/doctor-availability/${id}`, { method: 'DELETE' }),
 };

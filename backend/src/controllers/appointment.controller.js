@@ -11,7 +11,18 @@ const APPT_SELECT = {
   status: true,
   notes: true,
   createdAt: true,
-  patient: { select: { id: true, name: true, email: true } },
+  patient: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      dateOfBirth: true,
+      gender: true,
+      address: true,
+      medicalNotes: true,
+    },
+  },
   doctor: {
     select: {
       id: true,

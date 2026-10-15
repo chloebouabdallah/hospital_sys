@@ -24,6 +24,9 @@ import FindDoctors from './pages/patient/FindDoctors';
 import MyAppointments from './pages/patient/MyAppointments';
 import HospitalsPage from './pages/Hospitals';
 import Profile from './pages/Profile';
+import MySchedule from './pages/doctor/MySchedule';
+import Appointments from './pages/Appointments';
+
 
 export default function App() {
   return (
@@ -48,17 +51,17 @@ export default function App() {
             <Route path="symptom-checker" element={<SymptomChecker />} />
             <Route path="find-doctors" element={<FindDoctors />} />
             <Route path="hospitals" element={<HospitalsPage />} />  
-            <Route path="appointments" element={<MyAppointments />} />
             {/* Doctor */}
             <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
-            <Route path="schedule" element={<DashboardPlaceholder title="My schedule" description="Your hours per hospital." />} />
+            <Route path="schedule" element={<MySchedule />} />
             <Route path="patients" element={<DashboardPlaceholder title="My patients" description="People you've seen." />} />
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="reviews" element={<DashboardPlaceholder title="My reviews" description="Patient reviews on your profile." />} /> 
 
             {/* Admin */}
             <Route path="users" element={<AdminUsers />} />
             <Route path="doctors" element={<AdminDoctors />} />          
             <Route path="hospitals" element={<AdminHospitals />} />
-            <Route path="appointments" element={<AdminAppointments />} /> 
             <Route path="schedules" element={<AdminSchedules />} /> 
             <Route path="specialties" element={<AdminSpecialties />} /> 
             <Route path="symptoms" element={<AdminSymptoms />} />

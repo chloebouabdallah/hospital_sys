@@ -21,6 +21,8 @@ const reviewRoutes = require('./routes/review.routes');
 const adminRoutes = require('./routes/admin.routes');
 const patientRoutes = require('./routes/patient.routes');
 
+const doctorDashboardRoutes = require('./routes/doctor-dashboard.routes');
+
 const app = express();
 
 app.use(cors({
@@ -57,7 +59,7 @@ app.use('/api/doctor-availability', availabilityRoutes);
 app.use('/api/doctor-reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/patient', patientRoutes);
-
+app.use('/api/doctor', doctorDashboardRoutes);
 // Error handler (from Day 6) — put after all routes, before listen.
 app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {

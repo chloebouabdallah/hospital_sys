@@ -103,13 +103,14 @@ const NAV = {
   { to: '/dashboard/hospitals', label: 'Hospitals', Icon: Icon.Hospital },
   { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
 ],
-  doctor: [
-    { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
-    { to: '/dashboard/requests', label: 'Requests', Icon: Icon.Inbox },
-    { to: '/dashboard/schedule', label: 'My schedule', Icon: Icon.Clock },
-    { to: '/dashboard/patients', label: 'Patients', Icon: Icon.Users },
-    { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
-  ],
+doctor: [
+  { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
+  { to: '/dashboard/schedule', label: 'My schedule', Icon: Icon.Clock },
+  { to: '/dashboard/appointments', label: 'Appointments', Icon: Icon.Calendar },
+  { to: '/dashboard/patients', label: 'Patients', Icon: Icon.Users },
+  { to: '/dashboard/reviews', label: 'My reviews', Icon: Icon.Star },
+  { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
+],
   admin: [
     { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
     { to: '/dashboard/appointments', label: 'Appointments', Icon: Icon.Calendar },

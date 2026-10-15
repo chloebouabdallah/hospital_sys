@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String         @db.VarChar(100)
-  email         String         @unique @db.VarChar(150)
-  passwordHash  String         @map("password_hash")
-  role          String         @db.VarChar(20)
-  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
-  phone         String?        @db.VarChar(30)
-  date_of_birth DateTime?      @db.Date
-  gender        String?        @db.VarChar(20)
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(100)
+  email         String          @unique @db.VarChar(150)
+  passwordHash  String          @map("password_hash")
+  role          String          @db.VarChar(20)
+  createdAt     DateTime?       @default(now()) @map("created_at") @db.Timestamp(6)
+  phone         String?         @db.VarChar(30)
+  dateOfBirth   DateTime?       @map("date_of_birth") @db.Date
+  gender        String?         @db.VarChar(20)
   address       String?
-  medical_notes String?
-  updated_at    DateTime?      @default(now()) @db.Timestamp(6)
-  appointments  Appointment[]  @relation("PatientAppointments")
+  medicalNotes  String?         @map("medical_notes")
+  updatedAt     DateTime?       @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  appointments  Appointment[]   @relation("PatientAppointments")
   doctorReviews DoctorReview[]
   doctor        Doctor?
   notifications Notification[]

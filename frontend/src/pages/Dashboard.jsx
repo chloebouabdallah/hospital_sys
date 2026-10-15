@@ -1,12 +1,13 @@
 import { useAuth } from '../context/AuthContext';
 import AdminOverview from './admin/AdminOverview';
 import PatientOverview from './patient/PatientOverview';
+import DoctorOverview from './doctor/DoctorOverview';
 
 export default function Dashboard() {
   const { user } = useAuth();
   if (!user) return null;
 
-  if (user.role === 'doctor') return <DoctorHome user={user} />;
+  if (user.role === 'doctor') return <DoctorOverview />;
   if (user.role === 'admin') return <AdminOverview />;
   return <PatientOverview />;
 }
@@ -40,31 +41,3 @@ function PatientHome({ user }) {
   );
 }
 
-function DoctorHome({ user }) {
-  return (
-    <div>
-      <header className="pg-head">
-        <h1>Welcome, {user.name}.</h1>
-        <p className="pg-sub">Review your pending requests and manage your schedule.</p>
-      </header>
-
-      <div className="pg-cards">
-        <a href="/dashboard/requests" className="pg-card">
-          <div className="pg-card-icon">📥</div>
-          <h3>Pending requests</h3>
-          <p>Confirm or cancel patient bookings waiting for your review.</p>
-        </a>
-        <a href="/dashboard/schedule" className="pg-card">
-          <div className="pg-card-icon">🕐</div>
-          <h3>My schedule</h3>
-          <p>Manage the hours you're available at each hospital.</p>
-        </a>
-        <a href="/dashboard/patients" className="pg-card">
-          <div className="pg-card-icon">🧑‍🤝‍🧑</div>
-          <h3>My patients</h3>
-          <p>See the patients you've seen.</p>
-        </a>
-      </div>
-    </div>
-  );
-}
