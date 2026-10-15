@@ -6,6 +6,35 @@ const {
   FALLBACK_MESSAGE,
 } = require('../config/fallback');
 
+// Load the booking policy for a given urgency level.
+// Falls back to "no_triage" rules if the level is unknown, so the booking
+// modal always has some rules to work with.
+async function loadBookingPolicy(urgencyLevel) {
+  const level = ['urgent', 'moderate', 'low'].includes(urgencyLevel)
+    ? urgencyLevel
+    : 'no_triage';
+
+  try {
+    const rule = await prisma.urgencyBookingRule.findUnique({
+      where: { urgencyLevel: level },
+    });
+    if (!rule) return null;
+    return {
+      urgencyLevel: rule.urgencyLevel,
+      minHoursAhead: rule.minHoursAhead,
+      maxDaysAhead: rule.maxDaysAhead,
+      radiusKm: rule.radiusKm,
+      message: rule.message,
+    };
+  } catch (err) {
+    // If the table doesn't exist yet or something else breaks, don't fail the
+    // whole triage response — just return null and let the frontend fall back
+    // to default behavior.
+    console.error('loadBookingPolicy error:', err);
+    return null;
+  }
+}
+
 // Turns the engine's raw result (ids only) into the full response the results screen renders.
 //
 // Rules for assembly:
@@ -15,6 +44,7 @@ const {
 //  - conditions           = union of matchedConditionIds across ALL matching rules, de-duplicated,
 //                           ordered by rule rank (best rule first), then by the order in the rule
 //  - articles             = MedicalArticles attached under the condition they belong to
+//  - booking              = urgency-aware booking policy (min/max window + message)
 //
 // If NO rule matched, a cautious fallback is returned instead (see config/fallback.js):
 // matched:false, moderate urgency, a general practitioner, and an explanatory message.
@@ -31,6 +61,8 @@ async function buildTriageResponse(triage, normalized) {
       select: { id: true, name: true, description: true },
     });
 
+    const booking = await loadBookingPolicy('no_triage');
+
     return {
       matched: false,
       urgencyLevel: FALLBACK_URGENCY,
@@ -39,6 +71,7 @@ async function buildTriageResponse(triage, normalized) {
       message: FALLBACK_MESSAGE,
       incomplete,
       disclaimer: DISCLAIMER,
+      booking,
     };
   }
 
@@ -103,6 +136,8 @@ async function buildTriageResponse(triage, normalized) {
       })
     : null;
 
+  const booking = await loadBookingPolicy(primary.urgencyLevel);
+
   return {
     matched: true,
     urgencyLevel: primary.urgencyLevel,
@@ -111,6 +146,7 @@ async function buildTriageResponse(triage, normalized) {
     message: null,
     incomplete,
     disclaimer: DISCLAIMER,
+    booking,
   };
 }
 

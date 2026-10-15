@@ -31,26 +31,16 @@ const CSS = `
   padding: 20px 24px;
   border-bottom: 1px solid var(--line);
 }
-.bm-head h2 {
-  font-family: var(--font-head);
-  font-size: 18px;
-  margin: 0;
-}
+.bm-head h2 { font-family: var(--font-head); font-size: 18px; margin: 0; }
 .bm-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  line-height: 1;
-  color: var(--mut);
-  cursor: pointer;
-  padding: 0 4px;
+  background: none; border: none;
+  font-size: 24px; line-height: 1;
+  color: var(--mut); cursor: pointer; padding: 0 4px;
 }
 .bm-body {
   padding: 22px 24px 24px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: flex; flex-direction: column; gap: 14px;
 }
 .bm-doctor {
   padding: 12px 14px;
@@ -75,6 +65,27 @@ const CSS = `
 .bm-doctor-info p { margin: 0; }
 .bm-doctor-name { font-weight: 600; font-size: 14px; color: var(--ink); }
 .bm-doctor-spec { font-size: 12px; color: var(--mut); margin-top: 2px !important; }
+
+.bm-policy {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid;
+}
+.bm-policy-urgent   { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+.bm-policy-moderate { background: #fef3c7; border-color: #fde68a; color: #92400e; }
+.bm-policy-low      { background: #dcfce7; border-color: #bbf7d0; color: #166534; }
+.bm-policy-default  { background: var(--soft); border-color: var(--line); color: var(--mut); }
+.bm-policy-title {
+  font-weight: 700;
+  font-family: var(--font-head);
+  margin: 0 0 2px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.bm-policy-msg { margin: 0; }
 
 .bm-label {
   font-size: 13px;
@@ -135,16 +146,33 @@ const CSS = `
 .bm-error { color: #dc2626; font-size: 14px; margin: 0; }
 `;
 
-export default function BookingModal({ doctor, preselectedHospitalId, onClose, onBooked }) {
+export default function BookingModal({ doctor, preselectedHospitalId, urgency, onClose, onBooked }) {
+  const [policy, setPolicy] = useState(null);
+  const [loadingPolicy, setLoadingPolicy] = useState(true);
+
   const [date, setDate] = useState('');
- const [hospitalId, setHospitalId] = useState(
-  preselectedHospitalId ?? doctor.hospitals?.[0]?.hospital?.id ?? ''
-);
+  const [hospitalId, setHospitalId] = useState(
+    preselectedHospitalId ?? doctor.hospitals?.[0]?.hospital?.id ?? ''
+  );
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Fetch the booking policy for this urgency
+  useEffect(() => {
+    const level = ['urgent', 'moderate', 'low'].includes(urgency) ? urgency : 'no_triage';
+    api
+      .getUrgencyBookingRules()
+      .then((r) => {
+        const rules = r.rules || [];
+        const found = rules.find((x) => x.urgencyLevel === level) || rules.find((x) => x.urgencyLevel === 'no_triage');
+        setPolicy(found || null);
+      })
+      .catch(() => setPolicy(null))
+      .finally(() => setLoadingPolicy(false));
+  }, [urgency]);
 
   // Load available slots when date + hospital change
   useEffect(() => {
@@ -158,6 +186,16 @@ export default function BookingModal({ doctor, preselectedHospitalId, onClose, o
       .catch(() => setSlots([]))
       .finally(() => setLoadingSlots(false));
   }, [doctor.id, date, hospitalId]);
+
+  // Filter slots by the policy's time window
+  const now = Date.now();
+  const visibleSlots = slots.filter((iso) => {
+    if (!policy) return true;
+    const t = new Date(iso).getTime();
+    const minTime = now + (policy.minHoursAhead || 0) * 60 * 60 * 1000;
+    const maxTime = now + (policy.maxDaysAhead || 30) * 24 * 60 * 60 * 1000;
+    return t >= minTime && t <= maxTime;
+  });
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -182,6 +220,9 @@ export default function BookingModal({ doctor, preselectedHospitalId, onClose, o
   }
 
   const hospitals = doctor.hospitals || [];
+  const policyClass = policy
+    ? `bm-policy-${policy.urgencyLevel === 'no_triage' ? 'default' : policy.urgencyLevel}`
+    : 'bm-policy-default';
 
   return (
     <div className="bm-backdrop" onClick={onClose}>
@@ -202,6 +243,19 @@ export default function BookingModal({ doctor, preselectedHospitalId, onClose, o
               <p className="bm-doctor-spec">{doctor.specialty?.name}</p>
             </div>
           </div>
+
+          {/* Policy banner */}
+          {!loadingPolicy && policy && (
+            <div className={`bm-policy ${policyClass}`}>
+              <p className="bm-policy-title">
+                {policy.urgencyLevel === 'urgent' && 'Urgent'}
+                {policy.urgencyLevel === 'moderate' && 'Moderate'}
+                {policy.urgencyLevel === 'low' && 'Low priority'}
+                {policy.urgencyLevel === 'no_triage' && 'Standard booking'}
+              </p>
+              <p className="bm-policy-msg">{policy.message}</p>
+            </div>
+          )}
 
           <div>
             <label className="bm-label">Hospital</label>
@@ -229,20 +283,32 @@ export default function BookingModal({ doctor, preselectedHospitalId, onClose, o
               onChange={(e) => setDate(e.target.value)}
               required
             />
+            {policy && (
+              <p className="bm-hint">
+                {policy.minHoursAhead > 0
+                  ? `Earliest bookable: ${policy.minHoursAhead}h from now.`
+                  : 'Same-day booking allowed.'}
+                {' '}Latest: {policy.maxDaysAhead} day{policy.maxDaysAhead === 1 ? '' : 's'} ahead.
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="bm-label">45-minute slots</label>
+            <label className="bm-label">Available slots</label>
             {loadingSlots && <p className="bm-hint">Loading slots…</p>}
-            {!loadingSlots && slots.length === 0 && date && (
-              <p className="bm-hint">No free slots that day. Try another date.</p>
+            {!loadingSlots && date && visibleSlots.length === 0 && (
+              <p className="bm-hint">
+                {slots.length === 0
+                  ? 'No slots that day. Try another date.'
+                  : 'No slots within your booking window. Try a different date.'}
+              </p>
             )}
             {!loadingSlots && !date && (
               <p className="bm-hint">Pick a date to see free slots.</p>
             )}
-            {!loadingSlots && slots.length > 0 && (
+            {!loadingSlots && visibleSlots.length > 0 && (
               <div className="bm-slots">
-                {slots.map((s) => (
+                {visibleSlots.map((s) => (
                   <button
                     key={s}
                     type="button"

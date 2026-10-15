@@ -47,6 +47,29 @@ const CSS = `
 }
 .fd-sub { color: var(--mut); font-size: 14px; margin: 0; }
 
+/* Urgency banner */
+.fd-urgency {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fd-urgency-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.fd-urgency-urgent   { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+.fd-urgency-urgent .fd-urgency-dot   { background: #dc2626; }
+.fd-urgency-moderate { background: #fef3c7; border-color: #fde68a; color: #92400e; }
+.fd-urgency-moderate .fd-urgency-dot { background: #d97706; }
+.fd-urgency-low      { background: #dcfce7; border-color: #bbf7d0; color: #166534; }
+.fd-urgency-low .fd-urgency-dot      { background: #16a34a; }
+
 /* Toolbar */
 .fd-toolbar {
   display: flex;
@@ -219,7 +242,7 @@ const CSS = `
   border-radius: 18px;
 }
 
-/* Reviews drawer (inline expand) */
+/* Reviews drawer */
 .fd-reviews {
   background: var(--soft);
   border-radius: 12px;
@@ -252,13 +275,16 @@ const CSS = `
 export default function FindDoctors() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const initialSpecialtyId = searchParams.get('specialtyId') || '';
+  const initialUrgency = searchParams.get('urgency') || null;
+
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [hospitals, setHospitals] = useState([]);
 
   const [search, setSearch] = useState('');
-  const [specialtyId, setSpecialtyId] = useState(searchParams.get('specialtyId') || '');
-  const [hospitalId, setHospitalId] = useState(searchParams.get('hospitalId') || '');
+  const [specialtyId, setSpecialtyId] = useState(initialSpecialtyId);
+  const [hospitalId, setHospitalId] = useState('');
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -276,7 +302,7 @@ export default function FindDoctors() {
       .catch(() => {});
   }, []);
 
-  // Load doctors whenever the filters change
+  // Load doctors whenever the specialty changes
   useEffect(() => {
     setLoading(true);
     setError('');
@@ -290,11 +316,12 @@ export default function FindDoctors() {
       .finally(() => setLoading(false));
   }, [specialtyId]);
 
-  // Sync URL when specialty changes
+  // Sync URL with current filters, and preserve urgency param if present
   useEffect(() => {
     const next = {};
     if (specialtyId) next.specialtyId = specialtyId;
     if (hospitalId) next.hospitalId = hospitalId;
+    if (initialUrgency) next.urgency = initialUrgency;
     setSearchParams(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [specialtyId, hospitalId]);
@@ -315,7 +342,7 @@ export default function FindDoctors() {
     }
   }
 
-  // Client-side filtering: name search + hospital (both multi-match on the doctor's hospitals list)
+  // Client-side filtering: name search + hospital match
   const visible = doctors.filter((d) => {
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -332,6 +359,13 @@ export default function FindDoctors() {
     return true;
   });
 
+  const urgencyMessages = {
+    urgent: 'Urgent case — you can book same-day at any nearby hospital.',
+    moderate: 'Moderate case — book within the next week.',
+    low: 'Low priority — book at least 2 days ahead.',
+  };
+  const showUrgencyBanner = initialUrgency && urgencyMessages[initialUrgency];
+
   return (
     <div className="fd-page">
       <style>{CSS}</style>
@@ -347,6 +381,14 @@ export default function FindDoctors() {
           </p>
         </div>
       </header>
+
+      {/* Urgency banner if arriving from the symptom checker */}
+      {showUrgencyBanner && (
+        <div className={`fd-urgency fd-urgency-${initialUrgency}`}>
+          <span className="fd-urgency-dot" />
+          <span>{urgencyMessages[initialUrgency]}</span>
+        </div>
+      )}
 
       {/* Toolbar */}
       <div className="fd-toolbar">
@@ -423,7 +465,6 @@ export default function FindDoctors() {
                   </div>
                 )}
 
-                {/* Rating */}
                 <div className="fd-rating">
                   <span className="fd-stars">
                     {[1, 2, 3, 4, 5].map((n) => (
@@ -441,7 +482,9 @@ export default function FindDoctors() {
                 <div className="fd-actions">
                   <button
                     className="btn btn-primary"
-                    onClick={() => setBooking(d)}
+                    onClick={() =>
+                      setBooking({ doctor: d, hospital: null, urgency: initialUrgency })
+                    }
                   >
                     Book
                   </button>
@@ -488,7 +531,9 @@ export default function FindDoctors() {
 
       {booking && (
         <BookingModal
-          doctor={booking}
+          doctor={booking.doctor}
+          preselectedHospitalId={booking.hospital?.id}
+          urgency={booking.urgency}
           onClose={() => setBooking(null)}
           onBooked={() => setBooking(null)}
         />

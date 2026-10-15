@@ -668,12 +668,12 @@ function ResultView({ result, onReset }) {
           Start over
         </button>
         {specialty && (
-          <Link
-            to={`/dashboard/find-doctors?specialtyId=${specialty.id}`}
-            className="btn btn-primary"
-          >
-            Find a {specialty.name} near you →
-          </Link>
+         <Link
+  to={`/dashboard/find-doctors?specialtyId=${specialty.id}&urgency=${result.urgencyLevel}`}
+  className="btn btn-primary"
+>
+  Find a {specialty.name} near you →
+</Link>
         )}
       </div>
     </div>

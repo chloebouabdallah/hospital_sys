@@ -170,4 +170,6 @@ getAvailability: (params = '') => request(`/doctor-availability${params}`),
 createAvailability: (payload) => request('/doctor-availability', { method: 'POST', body: payload }),
 updateAvailability: (id, payload) => request(`/doctor-availability/${id}`, { method: 'PUT', body: payload }),
 deleteAvailability: (id) => request(`/doctor-availability/${id}`, { method: 'DELETE' }),
+
+getUrgencyBookingRules: () => request('/urgency-booking-rules'),
 };

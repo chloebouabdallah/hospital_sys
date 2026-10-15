@@ -8,20 +8,19 @@ datasource db {
 }
 
 model User {
-  id            Int             @id @default(autoincrement())
-  name          String          @db.VarChar(100)
-  email         String          @unique @db.VarChar(150)
-  passwordHash  String          @map("password_hash")
-  role          String          @db.VarChar(20)
-  createdAt     DateTime?       @default(now()) @map("created_at") @db.Timestamp(6)
-  phone         String?         @db.VarChar(30)
-  dateOfBirth   DateTime?       @map("date_of_birth") @db.Date
-  gender        String?         @db.VarChar(20)
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(100)
+  email         String         @unique @db.VarChar(150)
+  passwordHash  String         @map("password_hash")
+  role          String         @db.VarChar(20)
+  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  phone         String?        @db.VarChar(30)
+  dateOfBirth   DateTime?      @map("date_of_birth") @db.Date
+  gender        String?        @db.VarChar(20)
   address       String?
-  medicalNotes  String?         @map("medical_notes")
-  updatedAt     DateTime?       @default(now()) @map("updated_at") @db.Timestamp(6)
-
-  appointments  Appointment[]   @relation("PatientAppointments")
+  medicalNotes  String?        @map("medical_notes")
+  updatedAt     DateTime?      @default(now()) @map("updated_at") @db.Timestamp(6)
+  appointments  Appointment[]  @relation("PatientAppointments")
   doctorReviews DoctorReview[]
   doctor        Doctor?
   notifications Notification[]
@@ -259,4 +258,16 @@ model DoctorReview {
   @@index([doctorId, status], map: "idx_reviews_doctor_status")
   @@index([patientId], map: "idx_reviews_patient")
   @@map("doctor_reviews")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model UrgencyBookingRule {
+  urgencyLevel  String   @id @db.VarChar(10)
+  minHoursAhead Int      @default(24)
+  maxDaysAhead  Int      @default(30)
+  radiusKm      Int      @default(25)
+  message       String?
+  updatedAt     DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  @@map("urgency_booking_rules")
 }
