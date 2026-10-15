@@ -22,6 +22,8 @@ import AdminReviews from './pages/admin/AdminReviews';
 import SymptomChecker from './pages/patient/SymptomChecker';
 import FindDoctors from './pages/patient/FindDoctors';
 import MyAppointments from './pages/patient/MyAppointments';
+import HospitalsPage from './pages/Hospitals';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -45,7 +47,7 @@ export default function App() {
             {/* Patient */}
             <Route path="symptom-checker" element={<SymptomChecker />} />
             <Route path="find-doctors" element={<FindDoctors />} />
-            <Route path="patient-hospitals" element={<DashboardPlaceholder title="Hospitals" description="Browse hospitals near you." />} />
+            <Route path="hospitals" element={<HospitalsPage />} />  
             <Route path="appointments" element={<MyAppointments />} />
             {/* Doctor */}
             <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
@@ -56,6 +58,7 @@ export default function App() {
             <Route path="users" element={<AdminUsers />} />
             <Route path="doctors" element={<AdminDoctors />} />          
             <Route path="hospitals" element={<AdminHospitals />} />
+            <Route path="appointments" element={<AdminAppointments />} /> 
             <Route path="schedules" element={<AdminSchedules />} /> 
             <Route path="specialties" element={<AdminSpecialties />} /> 
             <Route path="symptoms" element={<AdminSymptoms />} />
@@ -65,8 +68,8 @@ export default function App() {
             <Route path="reviews" element={<AdminReviews />} />
 
             {/* Shared */}
-            <Route path="profile" element={<DashboardPlaceholder title="Profile" description="Your account details." />} />
-          </Route>
+             <Route path="profile" element={<Profile />} />       
+                </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

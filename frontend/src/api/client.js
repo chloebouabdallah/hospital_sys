@@ -60,6 +60,7 @@ cancelAppointment: (id) => request(`/appointments/${id}/cancel`, { method: 'PATC
 getReviewForAppointment: (id) => request(`/appointments/${id}/review`),
 createReview: (id, payload) => request(`/appointments/${id}/review`, { method: 'POST', body: payload }),
 updateReview: (id, payload) => request(`/appointments/${id}/review`, { method: 'PUT', body: payload }),
+deleteReview: (id) => request(`/appointments/${id}/review`, { method: 'DELETE' }),
 
   // ---------- Available slots ----------
   getAvailableSlots: (doctorId, date, hospitalId) =>
@@ -79,6 +80,11 @@ updateReview: (id, payload) => request(`/appointments/${id}/review`, { method: '
   createHospital: (payload) => request('/hospitals', { method: 'POST', body: payload }),
   updateHospital: (id, payload) => request(`/hospitals/${id}`, { method: 'PUT', body: payload }),
   deleteHospital: (id) => request(`/hospitals/${id}`, { method: 'DELETE' }),
+  getHospitalsNearby: (params) => request(`/hospitals/nearby?${params}`),
+  getDoctorReviews: (doctorId) => request(`/doctors/${doctorId}/reviews`),
+  getHospitalById: (id, params = '') => request(`/hospitals/${id}${params}`),
+
+
 
   // ---------- Doctor availability / schedules ----------
   getAvailability: (params = '') => request(`/doctor-availability${params}`),
@@ -152,4 +158,7 @@ getHospitalsNearby: (params) => request(`/hospitals/nearby?${params}`),
 
 // ---------- Patient ----------
 getPatientOverview: () => request('/patient/overview'),
+
+getMe: () => request('/users/me'),
+updateUser: (id, payload) => request(`/users/${id}`, { method: 'PATCH', body: payload }),
 };

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client';
 import BookingModal from './BookingModal';
 
-// Filter options
 const FILTERS = [
   { key: 'all', label: 'All' },
   { key: 'pending', label: 'Pending' },
@@ -36,7 +35,6 @@ const CSS = `
 }
 .ma-sub { color: var(--mut); font-size: 14px; margin: 0; }
 
-/* Filters */
 .ma-filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .ma-filter {
   padding: 8px 16px;
@@ -58,7 +56,6 @@ const CSS = `
   border-color: transparent;
 }
 
-/* Table */
 .ma-table-wrap {
   background: var(--card);
   border: 1px solid var(--line);
@@ -158,8 +155,10 @@ const CSS = `
   display: flex; flex-direction: column; gap: 14px;
 }
 .modal-actions {
-  display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;
+  display: flex; justify-content: space-between; gap: 8px; margin-top: 6px;
 }
+.modal-actions .right { display: flex; gap: 8px; }
+
 .form-group textarea {
   width: 100%;
   padding: 11px 14px;
@@ -196,6 +195,7 @@ const CSS = `
 
 export default function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
+  const [reviewsByApptId, setReviewsByApptId] = useState({});
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -208,7 +208,20 @@ export default function MyAppointments() {
     setError('');
     try {
       const res = await api.getAppointments();
-      setAppointments(res.appointments || []);
+      const list = res.appointments || [];
+      setAppointments(list);
+
+      // For each completed appointment, check if a review exists.
+      const completed = list.filter((a) => a.status === 'completed');
+      const reviewChecks = await Promise.all(
+        completed.map((a) =>
+          api
+            .getReviewForAppointment(a.id)
+            .then((r) => [a.id, r.review])
+            .catch(() => [a.id, null])
+        )
+      );
+      setReviewsByApptId(Object.fromEntries(reviewChecks));
     } catch (err) {
       setError(err.data?.error || 'Could not load your appointments.');
     } finally {
@@ -288,38 +301,41 @@ export default function MyAppointments() {
               </tr>
             </thead>
             <tbody>
-              {visible.map((a) => (
-                <tr key={a.id}>
-                  <td>
-                    <div className="ma-when">{formatDateTime(a.dateTime)}</div>
-                    {a.notes && <div className="ma-note">{a.notes}</div>}
-                  </td>
-                  <td>{a.doctor?.user?.name ?? '—'}</td>
-                  <td>{a.hospital?.name ?? '—'}</td>
-                  <td>
-                    <span className={`ma-badge ma-badge-${a.status}`}>{a.status}</span>
-                  </td>
-                  <td className="ma-col-actions">
-                    {(a.status === 'pending' || a.status === 'confirmed') && (
-                      <button
-                        className="btn btn-sm btn-danger"
-                        disabled={busyId === a.id}
-                        onClick={() => handleCancel(a)}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {a.status === 'completed' && (
-                      <button
-                        className="btn btn-sm"
-                        onClick={() => setReviewFor(a)}
-                      >
-                        Add review
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {visible.map((a) => {
+                const hasReview = !!reviewsByApptId[a.id];
+                return (
+                  <tr key={a.id}>
+                    <td>
+                      <div className="ma-when">{formatDateTime(a.dateTime)}</div>
+                      {a.notes && <div className="ma-note">{a.notes}</div>}
+                    </td>
+                    <td>{a.doctor?.user?.name ?? '—'}</td>
+                    <td>{a.hospital?.name ?? '—'}</td>
+                    <td>
+                      <span className={`ma-badge ma-badge-${a.status}`}>{a.status}</span>
+                    </td>
+                    <td className="ma-col-actions">
+                      {(a.status === 'pending' || a.status === 'confirmed') && (
+                        <button
+                          className="btn btn-sm btn-danger"
+                          disabled={busyId === a.id}
+                          onClick={() => handleCancel(a)}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      {a.status === 'completed' && (
+                        <button
+                          className="btn btn-sm"
+                          onClick={() => setReviewFor(a)}
+                        >
+                          {hasReview ? 'Edit review' : 'Add review'}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -373,7 +389,6 @@ function BookingFromScratchModal({ onClose, onBooked }) {
           <h2>Pick a doctor</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
         </header>
-
         <div className="modal-body">
           {loading && <p style={{ color: 'var(--mut)' }}>Loading…</p>}
           {!loading && doctors.length === 0 && (
@@ -403,9 +418,9 @@ function ReviewModal({ appointment, onClose, onSaved }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
 
-  // Try to fetch an existing review for this appointment
   useEffect(() => {
     api.getReviewForAppointment(appointment.id)
       .then((r) => {
@@ -415,9 +430,7 @@ function ReviewModal({ appointment, onClose, onSaved }) {
           setComment(r.review.comment || '');
         }
       })
-      .catch(() => {
-        // 404 = no review yet; that's fine
-      })
+      .catch(() => { /* 404 = no review */ })
       .finally(() => setLoading(false));
   }, [appointment.id]);
 
@@ -441,6 +454,19 @@ function ReviewModal({ appointment, onClose, onSaved }) {
       setError(err.data?.error || 'Could not save review.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm('Delete this review? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await api.deleteReview(appointment.id);
+      onSaved();
+    } catch (err) {
+      alert(err.data?.error || 'Could not delete review.');
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -501,10 +527,24 @@ function ReviewModal({ appointment, onClose, onSaved }) {
             {error && <p style={{ color: '#dc2626', fontSize: 14, margin: 0 }}>{error}</p>}
 
             <div className="modal-actions">
-              <button type="button" className="btn" onClick={onClose}>Cancel</button>
-              <button type="submit" className="btn btn-primary" disabled={submitting}>
-                {submitting ? 'Saving…' : existing ? 'Save changes' : 'Post review'}
-              </button>
+              {existing ? (
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? 'Deleting…' : 'Delete review'}
+                </button>
+              ) : (
+                <span />
+              )}
+              <div className="right">
+                <button type="button" className="btn" onClick={onClose}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                  {submitting ? 'Saving…' : existing ? 'Save review' : 'Post review'}
+                </button>
+              </div>
             </div>
           </form>
         )}

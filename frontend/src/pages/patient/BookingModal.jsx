@@ -135,11 +135,11 @@ const CSS = `
 .bm-error { color: #dc2626; font-size: 14px; margin: 0; }
 `;
 
-export default function BookingModal({ doctor, onClose, onBooked }) {
+export default function BookingModal({ doctor, preselectedHospitalId, onClose, onBooked }) {
   const [date, setDate] = useState('');
-  const [hospitalId, setHospitalId] = useState(
-    doctor.hospitals?.[0]?.hospital?.id ?? ''
-  );
+ const [hospitalId, setHospitalId] = useState(
+  preselectedHospitalId ?? doctor.hospitals?.[0]?.hospital?.id ?? ''
+);
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(false);
