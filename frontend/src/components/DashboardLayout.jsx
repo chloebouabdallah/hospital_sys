@@ -107,7 +107,6 @@ doctor: [
   { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
   { to: '/dashboard/schedule', label: 'My schedule', Icon: Icon.Clock },
   { to: '/dashboard/appointments', label: 'Appointments', Icon: Icon.Calendar },
-  { to: '/dashboard/patients', label: 'Patients', Icon: Icon.Users },
   { to: '/dashboard/reviews', label: 'My reviews', Icon: Icon.Star },
   { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
 ],

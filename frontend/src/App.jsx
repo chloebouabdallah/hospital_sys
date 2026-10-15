@@ -26,6 +26,8 @@ import HospitalsPage from './pages/Hospitals';
 import Profile from './pages/Profile';
 import MySchedule from './pages/doctor/MySchedule';
 import Appointments from './pages/Appointments';
+import DoctorReviews from './pages/doctor/DoctorReviews';
+
 
 
 export default function App() {
@@ -56,7 +58,7 @@ export default function App() {
             <Route path="schedule" element={<MySchedule />} />
             <Route path="patients" element={<DashboardPlaceholder title="My patients" description="People you've seen." />} />
             <Route path="appointments" element={<Appointments />} />
-            <Route path="reviews" element={<DashboardPlaceholder title="My reviews" description="Patient reviews on your profile." />} /> 
+            <Route path="reviews" element={<DoctorReviews />} />
 
             {/* Admin */}
             <Route path="users" element={<AdminUsers />} />
