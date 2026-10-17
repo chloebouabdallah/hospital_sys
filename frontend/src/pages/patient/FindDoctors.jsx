@@ -144,11 +144,21 @@ const CSS = `
   box-shadow: 0 14px 32px #7b5cf018;
 }
 
+/* Clickable header */
 .fd-card-head {
   display: flex;
   gap: 14px;
   align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s;
 }
+.fd-card-head:hover .fd-name { color: var(--v); }
+.fd-card-head:hover .fd-avatar {
+  transform: scale(1.04);
+  box-shadow: 0 6px 18px #7b5cf040;
+}
+
 .fd-avatar {
   width: 52px;
   height: 52px;
@@ -162,6 +172,7 @@ const CSS = `
   font-family: var(--font-head);
   font-size: 20px;
   flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 .fd-name {
   font-family: var(--font-head);
@@ -169,6 +180,7 @@ const CSS = `
   font-weight: 700;
   margin: 0 0 2px;
   color: var(--ink);
+  transition: color 0.15s;
 }
 .fd-spec {
   font-size: 13px;
@@ -316,7 +328,7 @@ export default function FindDoctors() {
       .finally(() => setLoading(false));
   }, [specialtyId]);
 
-  // Sync URL with current filters, and preserve urgency param if present
+  // Sync URL with current filters, preserve urgency
   useEffect(() => {
     const next = {};
     if (specialtyId) next.specialtyId = specialtyId;
@@ -342,7 +354,6 @@ export default function FindDoctors() {
     }
   }
 
-  // Client-side filtering: name search + hospital match
   const visible = doctors.filter((d) => {
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -366,6 +377,11 @@ export default function FindDoctors() {
   };
   const showUrgencyBanner = initialUrgency && urgencyMessages[initialUrgency];
 
+  const detailLink = (doctorId) => {
+    const base = `/dashboard/doctors/${doctorId}`;
+    return initialUrgency ? `${base}?urgency=${initialUrgency}` : base;
+  };
+
   return (
     <div className="fd-page">
       <style>{CSS}</style>
@@ -382,7 +398,6 @@ export default function FindDoctors() {
         </div>
       </header>
 
-      {/* Urgency banner if arriving from the symptom checker */}
       {showUrgencyBanner && (
         <div className={`fd-urgency fd-urgency-${initialUrgency}`}>
           <span className="fd-urgency-dot" />
@@ -439,7 +454,8 @@ export default function FindDoctors() {
 
             return (
               <article key={d.id} className="fd-card">
-                <div className="fd-card-head">
+                {/* Clickable header → detail page */}
+                <Link to={detailLink(d.id)} className="fd-card-head">
                   <div className="fd-avatar">
                     {(d.user?.name || '?').charAt(0).toUpperCase()}
                   </div>
@@ -450,7 +466,7 @@ export default function FindDoctors() {
                       <p className="fd-years">{d.yearsExperience} years experience</p>
                     )}
                   </div>
-                </div>
+                </Link>
 
                 {d.bio && <p className="fd-bio">{d.bio}</p>}
 

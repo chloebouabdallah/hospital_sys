@@ -28,6 +28,8 @@ import MySchedule from './pages/doctor/MySchedule';
 import Appointments from './pages/Appointments';
 import DoctorReviews from './pages/doctor/DoctorReviews';
 
+import DoctorDetail from './pages/patient/DoctorDetail';
+
 
 
 export default function App() {
@@ -53,7 +55,8 @@ export default function App() {
             <Route path="symptom-checker" element={<SymptomChecker />} />
             <Route path="find-doctors" element={<FindDoctors />} />
             <Route path="hospitals" element={<HospitalsPage />} />  
-            {/* Doctor */}
+            <Route path="doctors/:id" element={<DoctorDetail />} />
+             {/* Doctor */}
             <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
             <Route path="schedule" element={<MySchedule />} />
             <Route path="patients" element={<DashboardPlaceholder title="My patients" description="People you've seen." />} />

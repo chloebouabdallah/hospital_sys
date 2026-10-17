@@ -7,8 +7,8 @@ export default function Dashboard() {
   const { user } = useAuth();
   if (!user) return null;
 
-  if (user.role === 'doctor') return <DoctorOverview />;
   if (user.role === 'admin') return <AdminOverview />;
+  if (user.role === 'doctor') return <DoctorOverview />;
   return <PatientOverview />;
 }
 

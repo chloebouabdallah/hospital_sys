@@ -11,14 +11,15 @@ const FILTERS = [
 ];
 
 function formatDateTime(iso) {
-  return new Date(iso).toLocaleString(undefined, {
-    weekday: 'short', day: 'numeric', month: 'short',
-    hour: '2-digit', minute: '2-digit',
-  });
+  const d = new Date(iso);
+  const weekday = d.toLocaleDateString(undefined, { weekday: 'long' });
+  const date = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  return { weekday, date, time };
 }
 
 const CSS = `
-.ma-page { display: flex; flex-direction: column; gap: 22px; }
+.ma-page { display: flex; flex-direction: column; gap: 18px; }
 
 .ma-header {
   display: flex;
@@ -29,20 +30,21 @@ const CSS = `
 }
 .ma-header h1 {
   font-family: var(--font-head);
-  font-size: 28px;
-  margin: 0 0 4px;
+  font-size: 26px;
+  margin: 0 0 3px;
   letter-spacing: -0.02em;
 }
-.ma-sub { color: var(--mut); font-size: 14px; margin: 0; }
+.ma-sub { color: var(--mut); font-size: 13px; margin: 0; }
 
-.ma-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Filters */
+.ma-filters { display: flex; gap: 6px; flex-wrap: wrap; }
 .ma-filter {
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: 6px 14px;
+  border-radius: 9px;
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--mut);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -56,64 +58,183 @@ const CSS = `
   border-color: transparent;
 }
 
-.ma-table-wrap {
+/* Card list */
+.ma-list { display: flex; flex-direction: column; gap: 10px; }
+
+.ma-card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.ma-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.ma-table th {
-  text-align: left;
-  font-weight: 600;
-  font-size: 12px;
+.ma-card:hover { border-color: #7b5cf055; box-shadow: 0 4px 16px #7b5cf010; }
+@media (max-width: 780px) {
+  .ma-card { grid-template-columns: 80px 1fr; }
+  .ma-card-actions { grid-column: 1 / -1; border-left: none; border-top: 1px solid var(--line); }
+}
+
+/* Date column */
+.ma-date-col {
+  background: var(--soft);
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1px;
+  border-right: 1px solid var(--line);
+}
+.ma-date-wd {
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--mut);
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid var(--line);
 }
-.ma-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--line);
+.ma-date-day {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
   color: var(--ink);
-  vertical-align: middle;
+  letter-spacing: -0.02em;
+  margin: 2px 0;
 }
-.ma-table tr:last-child td { border-bottom: none; }
+.ma-date-mon {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mut);
+}
+.ma-date-time {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--v);
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--line);
+  width: 100%;
+}
 
-.ma-when { font-weight: 600; }
-.ma-note { font-size: 12px; color: var(--mut); margin-top: 2px; }
+/* Body column */
+.ma-body { padding: 14px 16px; min-width: 0; }
+.ma-body-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.ma-doctor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ma-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.ma-doctor-name {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ma-doctor-spec {
+  font-size: 11px;
+  color: var(--mut);
+  margin: 1px 0 0;
+}
 
+.ma-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12.5px;
+  color: var(--mut);
+}
+.ma-details span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ma-details b { color: var(--ink); font-weight: 600; }
+
+.ma-notes {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--mut);
+  font-style: italic;
+  padding: 4px 8px;
+  background: var(--soft);
+  border-radius: 6px;
+  border-left: 2px solid var(--v);
+}
+
+/* Status badge */
 .ma-badge {
   display: inline-block;
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
 .ma-badge-pending   { background: #ede9fe; color: #6d28d9; }
 .ma-badge-confirmed { background: #dbeafe; color: #1d4ed8; }
 .ma-badge-completed { background: #dcfce7; color: #166534; }
 .ma-badge-cancelled { background: #f1f5f9; color: #64748b; }
 
-.ma-col-actions { text-align: right; white-space: nowrap; }
-.ma-col-actions .btn { margin-left: 6px; }
+/* Actions column */
+.ma-card-actions {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  border-left: 1px solid var(--line);
+  min-width: 130px;
+}
+.ma-card-actions .btn {
+  width: 100%;
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
 .btn-danger { color: #dc2626; border-color: #fecaca; background: #fff; }
 .btn-danger:hover { background: #fef2f2; }
+.ma-card-actions .btn-review { color: var(--v); border-color: var(--v); background: #fff; }
+.ma-card-actions .btn-review:hover { background: var(--soft); }
 
 .ma-state {
-  padding: 60px 40px;
+  padding: 48px 40px;
   text-align: center;
   color: var(--mut);
-  font-size: 15px;
+  font-size: 14px;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 14px;
 }
 
-/* Modal */
+/* Modal (unchanged) */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -158,7 +279,6 @@ const CSS = `
   display: flex; justify-content: space-between; gap: 8px; margin-top: 6px;
 }
 .modal-actions .right { display: flex; gap: 8px; }
-
 .form-group textarea {
   width: 100%;
   padding: 11px 14px;
@@ -176,17 +296,11 @@ const CSS = `
   border-color: var(--p);
   box-shadow: 0 0 0 3px #008cfd22;
 }
-
-/* Star rating picker */
 .star-picker { display: flex; gap: 6px; margin-top: 4px; }
 .star-btn {
-  background: none;
-  border: none;
-  font-size: 30px;
-  line-height: 1;
-  cursor: pointer;
-  color: #d1d5db;
-  padding: 0;
+  background: none; border: none;
+  font-size: 30px; line-height: 1;
+  cursor: pointer; color: #d1d5db; padding: 0;
   transition: color 0.1s, transform 0.1s;
 }
 .star-btn:hover { transform: scale(1.15); }
@@ -211,7 +325,6 @@ export default function MyAppointments() {
       const list = res.appointments || [];
       setAppointments(list);
 
-      // For each completed appointment, check if a review exists.
       const completed = list.filter((a) => a.status === 'completed');
       const reviewChecks = await Promise.all(
         completed.map((a) =>
@@ -256,7 +369,7 @@ export default function MyAppointments() {
         <div>
           <h1>My appointments</h1>
           <p className="ma-sub">
-            {appointments.length} record{appointments.length === 1 ? '' : 's'}
+            {appointments.length} appointment{appointments.length === 1 ? '' : 's'}
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => setBooking(true)}>
@@ -289,55 +402,74 @@ export default function MyAppointments() {
       )}
 
       {!loading && !error && visible.length > 0 && (
-        <div className="ma-table-wrap">
-          <table className="ma-table">
-            <thead>
-              <tr>
-                <th>When</th>
-                <th>Doctor</th>
-                <th>Hospital</th>
-                <th>Status</th>
-                <th className="ma-col-actions"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map((a) => {
-                const hasReview = !!reviewsByApptId[a.id];
-                return (
-                  <tr key={a.id}>
-                    <td>
-                      <div className="ma-when">{formatDateTime(a.dateTime)}</div>
-                      {a.notes && <div className="ma-note">{a.notes}</div>}
-                    </td>
-                    <td>{a.doctor?.user?.name ?? '—'}</td>
-                    <td>{a.hospital?.name ?? '—'}</td>
-                    <td>
-                      <span className={`ma-badge ma-badge-${a.status}`}>{a.status}</span>
-                    </td>
-                    <td className="ma-col-actions">
-                      {(a.status === 'pending' || a.status === 'confirmed') && (
-                        <button
-                          className="btn btn-sm btn-danger"
-                          disabled={busyId === a.id}
-                          onClick={() => handleCancel(a)}
-                        >
-                          Cancel
-                        </button>
-                      )}
-                      {a.status === 'completed' && (
-                        <button
-                          className="btn btn-sm"
-                          onClick={() => setReviewFor(a)}
-                        >
-                          {hasReview ? 'Edit review' : 'Add review'}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="ma-list">
+          {visible.map((a) => {
+            const hasReview = !!reviewsByApptId[a.id];
+            const { weekday, date, time } = formatDateTime(a.dateTime);
+            const [dayNum, ...rest] = date.split(' ');
+            const monthYear = rest.slice(1).join(' ');
+            const month = rest[0];
+
+            return (
+              <article key={a.id} className="ma-card">
+                {/* Date block */}
+                <div className="ma-date-col">
+                  <span className="ma-date-wd">{weekday}</span>
+                  <span className="ma-date-day">{dayNum}</span>
+                  <span className="ma-date-mon">{month} {monthYear}</span>
+                  <span className="ma-date-time">{time}</span>
+                </div>
+
+                {/* Main body */}
+                <div className="ma-body">
+                  <div className="ma-body-head">
+                    <div className="ma-doctor">
+                      <div className="ma-avatar">
+                        {(a.doctor?.user?.name || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <p className="ma-doctor-name">{a.doctor?.user?.name ?? '—'}</p>
+                        {a.doctor?.specialty?.name && (
+                          <p className="ma-doctor-spec">{a.doctor.specialty.name}</p>
+                        )}
+                      </div>
+                    </div>
+                    <span className={`ma-badge ma-badge-${a.status}`}>{a.status}</span>
+                  </div>
+
+                  <div className="ma-details">
+                    <span>
+                      📍 <b>{a.hospital?.name ?? '—'}</b>
+                      {a.hospital?.city ? ` · ${a.hospital.city}` : ''}
+                    </span>
+                  </div>
+
+                  {a.notes && <div className="ma-notes">{a.notes}</div>}
+                </div>
+
+                {/* Actions */}
+                <div className="ma-card-actions">
+                  {(a.status === 'pending' || a.status === 'confirmed') && (
+                    <button
+                      className="btn btn-danger"
+                      disabled={busyId === a.id}
+                      onClick={() => handleCancel(a)}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  {a.status === 'completed' && (
+                    <button
+                      className={`btn${hasReview ? '' : ' btn-review'}`}
+                      onClick={() => setReviewFor(a)}
+                    >
+                      {hasReview ? 'Edit review' : 'Add review'}
+                    </button>
+                  )}
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
 
@@ -359,7 +491,7 @@ export default function MyAppointments() {
   );
 }
 
-// ---------- Modal: book from scratch (patient picks doctor) ----------
+// ---------- Book from scratch (patient picks doctor) ----------
 function BookingFromScratchModal({ onClose, onBooked }) {
   const [doctors, setDoctors] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -411,7 +543,7 @@ function BookingFromScratchModal({ onClose, onBooked }) {
   );
 }
 
-// ---------- Modal: review a completed appointment ----------
+// ---------- Review modal ----------
 function ReviewModal({ appointment, onClose, onSaved }) {
   const [loading, setLoading] = useState(true);
   const [existing, setExisting] = useState(null);
@@ -489,7 +621,10 @@ function ReviewModal({ appointment, onClose, onSaved }) {
                 {appointment.doctor?.user?.name}
               </p>
               <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--mut)' }}>
-                {formatDateTime(appointment.dateTime)} · {appointment.hospital?.name}
+                {new Date(appointment.dateTime).toLocaleString(undefined, {
+                  weekday: 'long', day: 'numeric', month: 'short',
+                  hour: '2-digit', minute: '2-digit',
+                })} · {appointment.hospital?.name}
               </p>
             </div>
 
