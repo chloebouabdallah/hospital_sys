@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import DashboardPlaceholder from './pages/DashboardPlaceholder';
 import './pages/DashboardHome.css';
+
 import AdminAppointments from './pages/admin/AdminAppointments';
 import AdminDoctors from './pages/admin/AdminDoctors';
 import AdminHospitals from './pages/admin/AdminHospitals';
@@ -18,19 +19,18 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminQuestions from './pages/admin/AdminQuestions';
 import AdminConditions from './pages/admin/AdminConditions';
 import AdminTriageRules from './pages/admin/AdminTriageRules';
-import AdminReviews from './pages/admin/AdminReviews';
+
 import SymptomChecker from './pages/patient/SymptomChecker';
 import FindDoctors from './pages/patient/FindDoctors';
 import MyAppointments from './pages/patient/MyAppointments';
-import HospitalsPage from './pages/Hospitals';
-import Profile from './pages/Profile';
-import MySchedule from './pages/doctor/MySchedule';
-import Appointments from './pages/Appointments';
-import DoctorReviews from './pages/doctor/DoctorReviews';
-
 import DoctorDetail from './pages/patient/DoctorDetail';
 
+import MySchedule from './pages/doctor/MySchedule';
 
+import Appointments from './pages/Appointments';
+import Reviews from './pages/Reviews';
+import HospitalsPage from './pages/Hospitals';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -51,33 +51,31 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
 
-            {/* Patient */}
+            {/* Patient-only */}
             <Route path="symptom-checker" element={<SymptomChecker />} />
             <Route path="find-doctors" element={<FindDoctors />} />
-            <Route path="hospitals" element={<HospitalsPage />} />  
             <Route path="doctors/:id" element={<DoctorDetail />} />
-             {/* Doctor */}
-            <Route path="requests" element={<DashboardPlaceholder title="Pending requests" description="Confirm or cancel bookings." />} />
+
+            {/* Doctor-only */}
             <Route path="schedule" element={<MySchedule />} />
             <Route path="patients" element={<DashboardPlaceholder title="My patients" description="People you've seen." />} />
-            <Route path="appointments" element={<Appointments />} />
-            <Route path="reviews" element={<DoctorReviews />} />
 
-            {/* Admin */}
+            {/* Admin-only */}
             <Route path="users" element={<AdminUsers />} />
-            <Route path="doctors" element={<AdminDoctors />} />          
-            <Route path="hospitals" element={<AdminHospitals />} />
-            <Route path="schedules" element={<AdminSchedules />} /> 
-            <Route path="specialties" element={<AdminSpecialties />} /> 
+            <Route path="doctors" element={<AdminDoctors />} />
+            <Route path="schedules" element={<AdminSchedules />} />
+            <Route path="specialties" element={<AdminSpecialties />} />
             <Route path="symptoms" element={<AdminSymptoms />} />
             <Route path="questions" element={<AdminQuestions />} />
             <Route path="conditions" element={<AdminConditions />} />
             <Route path="rules" element={<AdminTriageRules />} />
-            <Route path="reviews" element={<AdminReviews />} />
 
-            {/* Shared */}
-             <Route path="profile" element={<Profile />} />       
-                </Route>
+            {/* Shared, role-aware — decided inside each component */}
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="hospitals" element={<HospitalsPage />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="profile" element={<Profile />} />
+          </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
