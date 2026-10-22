@@ -318,6 +318,121 @@ const CSS = `
   accent-color: var(--v);
   cursor: pointer;
 }
+
+@media (max-width: 900px) {
+  .mys-page { gap: 18px; min-width: 0; }
+  .mys-header h1 { font-size: 25px; }
+  .mys-header > .btn { padding: 8px 12px; font-size: 13px; }
+
+  .mys-week {
+    grid-template-columns: 58px 650px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 16px;
+  }
+  .mys-week-head { padding: 12px 4px; }
+  .mys-hour { padding-right: 6px; font-size: 10px; }
+  .mys-day-head { padding: 12px 6px; font-size: 11px; }
+  .mys-block { left: 3px; right: 3px; padding: 6px 5px; }
+  .mys-block-name { font-size: 9px; }
+  .mys-block-time { font-size: 10px; }
+
+  .mys-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .mys-table,
+  .mys-table tbody { display: block; width: 100%; }
+  .mys-table thead { display: none; }
+  .mys-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .mys-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .mys-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .mys-table td:nth-child(1)::before { content: 'Day'; }
+  .mys-table td:nth-child(2)::before { content: 'Hospital'; }
+  .mys-table td:nth-child(3)::before { content: 'Hours'; }
+  .mys-table td:nth-child(4)::before { content: 'Status'; }
+  .mys-table td:nth-child(5) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .mys-table td:nth-child(5)::before { content: ''; display: none; }
+  .mys-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+  .mys-badge { padding: 3px 8px; font-size: 10px; }
+}
+
+@media (max-width: 560px) {
+  .mys-page { gap: 16px; }
+  .mys-header h1 { font-size: 23px; }
+  .mys-header > .btn { width: 100%; }
+  .mys-week {
+    grid-template-columns: 48px 630px;
+    border-radius: 13px;
+  }
+  .mys-hour { font-size: 9px; padding-right: 4px; }
+  .mys-day-head { padding: 10px 3px; font-size: 10px; }
+  .mys-block { padding: 5px 3px; border-radius: 7px; }
+  .mys-block-time { font-size: 9px; }
+  .mys-list-head { margin-top: 0; }
+  .mys-empty { padding: 36px 18px; font-size: 14px; }
+
+  .mys-page .modal-backdrop { align-items: flex-end; padding: 0; }
+  .mys-page .modal {
+    width: 100%;
+    max-width: none;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: 18px 18px 0 0;
+  }
+  .mys-page .modal-head { padding: 16px 18px; }
+  .mys-page .modal-head h2 { font-size: 17px; }
+  .mys-page .modal-body { padding: 18px 18px max(18px, env(safe-area-inset-bottom)); }
+  .mys-page .form-group input,
+  .mys-page .form-group select { font-size: 16px; }
+}
+
+@media (max-width: 380px) {
+  .mys-table tr { grid-template-columns: minmax(0, 1fr); }
+  .mys-table td:nth-child(5) { grid-column: auto; }
+  .mys-page .form-row { grid-template-columns: minmax(0, 1fr); }
+  .mys-page .modal-actions { flex-wrap: wrap; }
+  .mys-page .modal-actions > .btn,
+  .mys-page .modal-actions .right { flex: 1 1 100%; }
+  .mys-page .modal-actions .right .btn { flex: 1; }
+}
 `;
 
 export default function MySchedule() {
