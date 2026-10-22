@@ -2,8 +2,9 @@
 
 .auth-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* Left marketing panel */
@@ -82,11 +83,13 @@
   justify-content: center;
   padding: 40px 5vw;
   background: var(--bg);
+  min-width: 0;
 }
 
 .auth-form {
   width: 100%;
   max-width: 400px;
+  min-width: 0;
 }
 
 .auth-form h2 {
@@ -139,7 +142,7 @@
 .form-group input {
   width: 100%;
   padding: 11px 14px;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--ink);
   background: var(--card);
   border: 1px solid var(--line);
@@ -171,19 +174,78 @@
   margin: 4px 0 10px;
 }
 
-/* Small screens: stack */
+/* Tablet and smaller: stack the brand panel above the form. */
 @media (max-width: 820px) {
   .auth-split {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .auth-art {
-    padding: 80px 6vw 40px;
-    min-height: 260px;
+    padding: 84px 7vw 32px;
+    min-height: 250px;
   }
   .auth-logo {
     top: 24px;
+    left: 7vw;
   }
   .auth-art h1 {
-    font-size: 32px;
+    font-size: clamp(30px, 5vw, 38px);
+  }
+  .auth-form-wrap {
+    padding: 40px 7vw 48px;
+  }
+  .auth-form {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 560px) {
+  .auth-art {
+    min-height: 0;
+    padding: 76px 6vw 24px;
+    gap: 12px;
+  }
+  .auth-logo {
+    top: 16px;
+    left: 6vw;
+    gap: 8px;
+    font-size: 23px;
+  }
+  .auth-logo svg {
+    width: 34px;
+    height: 34px;
+  }
+  .auth-art h1 {
+    font-size: clamp(27px, 8vw, 34px);
+  }
+  .auth-art p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .auth-art-blob-a {
+    width: 220px;
+    height: 220px;
+  }
+  .auth-art-blob-b {
+    width: 180px;
+    height: 180px;
+  }
+  .auth-form-wrap {
+    align-items: flex-start;
+    padding: 30px 6vw 36px;
+  }
+  .auth-form h2 {
+    font-size: 25px;
+  }
+  .auth-sub {
+    margin-bottom: 22px;
+  }
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .auth-submit {
+    padding: 12px 18px;
+  }
+  .auth-foot {
+    margin-top: 20px;
   }
 }
