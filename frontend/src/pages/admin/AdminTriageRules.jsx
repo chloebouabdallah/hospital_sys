@@ -230,6 +230,130 @@ const CSS = `
   cursor: pointer;
   flex-shrink: 0;
 }
+
+@media (max-width: 1000px) {
+  .atr-table { table-layout: fixed; font-size: 13px; }
+  .atr-table th {
+    font-size: 10px;
+    padding: 12px 8px 10px;
+    letter-spacing: 0.03em;
+  }
+  .atr-table td { padding: 12px 8px; }
+  .atr-json { font-size: 11px; padding: 5px 7px; }
+  .atr-matches { font-size: 12px; }
+  .atr-col-actions .btn { margin: 2px; padding: 5px 7px; font-size: 11px; }
+}
+
+@media (max-width: 700px) {
+  .atr-page { gap: 18px; }
+  .atr-header h1 { font-size: 25px; }
+  .atr-header > .btn { padding: 8px 12px; font-size: 13px; }
+  .atr-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .atr-toolbar label { font-size: 11px; }
+  .atr-toolbar select { width: 100%; min-width: 0; font-size: 16px; }
+
+  .atr-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .atr-table,
+  .atr-table tbody { display: block; width: 100%; }
+  .atr-table thead { display: none; }
+  .atr-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .atr-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .atr-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .atr-table td:nth-child(1)::before { content: 'Symptom'; }
+  .atr-table td:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+  .atr-table td:nth-child(2)::before { content: 'Conditions'; }
+  .atr-table td:nth-child(3)::before { content: 'Urgency'; }
+  .atr-table td:nth-child(4)::before { content: 'Specialty'; }
+  .atr-table td:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+  .atr-table td:nth-child(5)::before { content: 'Matches'; }
+  .atr-table td:nth-child(6) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .atr-table td:nth-child(6)::before { content: ''; display: none; }
+  .atr-symptom { font-size: 12px; }
+  .atr-json {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 7px 9px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    line-height: 1.45;
+  }
+  .atr-badge { padding: 3px 8px; font-size: 10px; }
+  .atr-matches { font-size: 12px; }
+  .atr-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+
+  .atr-page .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .atr-page .modal {
+    width: 100%;
+    max-width: none;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: 18px 18px 0 0;
+  }
+  .atr-page .modal-head { padding: 16px 18px; }
+  .atr-page .modal-head h2 { font-size: 17px; }
+  .atr-page .modal-body { padding: 18px 18px max(18px, env(safe-area-inset-bottom)); }
+  .atr-page .modal-body .form-group textarea { font-size: 16px; }
+  .atr-page .modal-actions { position: sticky; bottom: 0; background: var(--card); padding-top: 8px; }
+}
+
+@media (max-width: 380px) {
+  .atr-table tr { grid-template-columns: minmax(0, 1fr); }
+  .atr-table td:nth-child(2),
+  .atr-table td:nth-child(5),
+  .atr-table td:nth-child(6) { grid-column: auto; }
+}
 `;
 
 // ---------- Page ----------

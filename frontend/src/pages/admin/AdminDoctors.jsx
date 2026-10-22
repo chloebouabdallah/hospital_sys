@@ -194,6 +194,95 @@ const CSS = `
   color: var(--mut);
   margin: 4px 0 0;
 }
+
+@media (max-width: 1000px) {
+  .ad-table { table-layout: fixed; font-size: 13px; }
+  .ad-table th {
+    font-size: 11px;
+    padding: 12px 9px 10px;
+    letter-spacing: 0.04em;
+  }
+  .ad-table td { padding: 12px 9px; }
+  .ad-doctor-cell { gap: 8px; }
+  .ad-avatar { width: 32px; height: 32px; }
+  .ad-name { font-size: 13px; }
+  .ad-hospitals { font-size: 12px; }
+  .ad-col-actions .btn { margin: 2px; padding: 5px 8px; font-size: 11px; }
+}
+
+@media (max-width: 700px) {
+  .ad-header h1 { font-size: 25px; }
+  .ad-header > .btn { padding: 8px 12px; font-size: 13px; }
+  .ad-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .ad-table,
+  .ad-table tbody { display: block; width: 100%; }
+  .ad-table thead { display: none; }
+  .ad-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .ad-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .ad-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .ad-table td:nth-child(1)::before { content: 'Doctor'; }
+  .ad-table td:nth-child(2)::before { content: 'Specialty'; }
+  .ad-table td:nth-child(3)::before { content: 'Years'; }
+  .ad-table td:nth-child(4)::before { content: 'Hospitals'; }
+  .ad-table td:nth-child(5)::before { content: 'Rating'; }
+  .ad-table td:nth-child(6) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .ad-table td:nth-child(6)::before { content: ''; display: none; }
+  .ad-doctor-cell { align-items: center; }
+  .ad-avatar { width: 30px; height: 30px; font-size: 13px; }
+  .ad-name { font-size: 12px; }
+  .ad-bio {
+    max-width: 24ch;
+    font-size: 11px;
+  }
+  .ad-hospitals { font-size: 11px; }
+  .ad-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+  .ad-rating { font-size: 12px; }
+  .ad-rating small { font-size: 10px; }
+}
+
+@media (max-width: 380px) {
+  .ad-table tr { grid-template-columns: minmax(0, 1fr); }
+  .ad-table td:nth-child(6) { grid-column: auto; }
+}
 `;
 
 // ---------- Page ----------

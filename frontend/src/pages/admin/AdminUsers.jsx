@@ -197,6 +197,97 @@ const CSS = `
   color: var(--mut);
   margin: 4px 0 0;
 }
+
+@media (max-width: 1000px) {
+  .aus-table { table-layout: fixed; font-size: 13px; }
+  .aus-table th {
+    font-size: 11px;
+    padding: 12px 9px 10px;
+    letter-spacing: 0.04em;
+  }
+  .aus-table td { padding: 12px 9px; }
+  .aus-user-cell { gap: 8px; }
+  .aus-avatar { width: 32px; height: 32px; }
+  .aus-email { font-size: 12px; overflow-wrap: anywhere; }
+  .aus-col-actions .btn { margin: 2px; padding: 5px 8px; font-size: 11px; }
+}
+
+@media (max-width: 700px) {
+  .aus-page { gap: 18px; }
+  .aus-header h1 { font-size: 25px; }
+  .aus-toolbar { align-items: stretch; flex-direction: column; }
+  .aus-search { width: 100%; min-width: 0; font-size: 16px; }
+  .aus-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .aus-filter { padding: 8px 6px; font-size: 12px; }
+  .aus-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .aus-table,
+  .aus-table tbody { display: block; width: 100%; }
+  .aus-table thead { display: none; }
+  .aus-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .aus-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .aus-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .aus-table td:nth-child(1)::before { content: 'User'; }
+  .aus-table td:nth-child(2)::before { content: 'Email'; }
+  .aus-table td:nth-child(3)::before { content: 'Role'; }
+  .aus-table td:nth-child(4) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .aus-table td:nth-child(4)::before { content: ''; display: none; }
+  .aus-user-cell { gap: 8px; }
+  .aus-avatar { width: 30px; height: 30px; font-size: 13px; }
+  .aus-name { font-size: 12px; }
+  .aus-id { font-size: 11px; }
+  .aus-email {
+    width: 100%;
+    font-size: 11px;
+    word-break: break-word;
+  }
+  .aus-badge { padding: 3px 8px; font-size: 10px; }
+  .aus-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+  .aus-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aus-table tr { grid-template-columns: minmax(0, 1fr); }
+  .aus-table td:nth-child(4) { grid-column: auto; }
+}
 `;
 
 // ---------- Page ----------

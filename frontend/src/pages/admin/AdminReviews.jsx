@@ -45,7 +45,7 @@ const CSS = `
 
 .arv-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
 
@@ -130,6 +130,31 @@ const CSS = `
   text-align: center;
   color: var(--mut);
   font-size: 15px;
+}
+
+@media (max-width: 800px) {
+  .arv-page { gap: 18px; }
+  .arv-header h1 { font-size: 25px; }
+  .arv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .arv-card { padding: 16px; gap: 10px; border-radius: 15px; }
+  .arv-card-head { gap: 8px; }
+  .arv-stars { font-size: 15px; }
+  .arv-status { padding: 3px 7px; font-size: 9px; }
+  .arv-comment { font-size: 13px; line-height: 1.5; }
+  .arv-meta { font-size: 11px; overflow-wrap: anywhere; }
+  .arv-actions .btn { padding: 6px 10px; font-size: 12px; }
+  .arv-filter { padding: 7px 12px; font-size: 12px; }
+}
+
+@media (max-width: 380px) {
+  .arv-grid { gap: 8px; }
+  .arv-card { padding: 11px; gap: 8px; }
+  .arv-card-head { flex-wrap: wrap; }
+  .arv-stars { font-size: 13px; }
+  .arv-status { font-size: 8px; }
+  .arv-comment { font-size: 12px; }
+  .arv-meta { font-size: 10px; }
+  .arv-actions .btn { width: 100%; padding: 6px 5px; font-size: 11px; }
 }
 `;
 

@@ -147,6 +147,91 @@ const CSS = `
   border-color: var(--p);
   box-shadow: 0 0 0 3px #008cfd22;
 }
+
+@media (max-width: 1000px) {
+  .ac-table { table-layout: fixed; font-size: 13px; }
+  .ac-table th {
+    font-size: 11px;
+    padding: 12px 9px 10px;
+    letter-spacing: 0.04em;
+  }
+  .ac-table td { padding: 12px 9px; }
+  .ac-desc { font-size: 12px; }
+  .ac-col-actions .btn { margin: 2px; padding: 5px 8px; font-size: 11px; }
+}
+
+@media (max-width: 700px) {
+  .ac-header h1 { font-size: 25px; }
+  .ac-header > .btn { padding: 8px 12px; font-size: 13px; }
+  .ac-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .ac-table,
+  .ac-table tbody { display: block; width: 100%; }
+  .ac-table thead { display: none; }
+  .ac-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .ac-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .ac-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .ac-table td:nth-child(1)::before { content: 'Name'; }
+  .ac-table td:nth-child(2)::before { content: 'Specialty'; }
+  .ac-table td:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .ac-table td:nth-child(3)::before { content: 'Description'; }
+  .ac-table td:nth-child(4) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .ac-table td:nth-child(4)::before { content: ''; display: none; }
+  .ac-name { font-size: 12px; }
+  .ac-desc {
+    max-width: none;
+    font-size: 12px;
+    -webkit-line-clamp: 3;
+  }
+  .ac-specialty { padding: 3px 8px; font-size: 10px; }
+  .ac-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+  .ac-table tr { grid-template-columns: minmax(0, 1fr); }
+  .ac-table td:nth-child(3),
+  .ac-table td:nth-child(4) { grid-column: auto; }
+}
 `;
 
 // ---------- Page ----------

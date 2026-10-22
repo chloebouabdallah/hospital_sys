@@ -30,7 +30,7 @@ const Icon = {
 };
 
 const CSS = `
-.fd-page { display: flex; flex-direction: column; gap: 22px; }
+.fd-page { display: flex; flex-direction: column; gap: 22px; min-width: 0; width: 100%; }
 
 .fd-header {
   display: flex;
@@ -39,6 +39,7 @@ const CSS = `
   flex-wrap: wrap;
   gap: 12px;
 }
+.fd-review-head span { min-width: 0; overflow-wrap: anywhere; }
 .fd-header h1 {
   font-family: var(--font-head);
   font-size: 28px;
@@ -80,6 +81,7 @@ const CSS = `
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 16px;
+  min-width: 0;
 }
 .fd-search {
   flex: 1;
@@ -125,11 +127,13 @@ const CSS = `
 /* Grid of doctor cards */
 .fd-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 16px;
+  min-width: 0;
 }
 
 .fd-card {
+  min-width: 0;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -147,6 +151,7 @@ const CSS = `
 /* Clickable header */
 .fd-card-head {
   display: flex;
+  min-width: 0;
   gap: 14px;
   align-items: center;
   text-decoration: none;
@@ -212,6 +217,8 @@ const CSS = `
 }
 .fd-hosp {
   display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
@@ -220,7 +227,9 @@ const CSS = `
   color: var(--v);
   font-size: 11.5px;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
+.fd-hosp svg { flex: 0 0 auto; }
 
 .fd-rating {
   display: flex;
@@ -243,6 +252,7 @@ const CSS = `
   margin-top: 4px;
 }
 .fd-actions .btn { flex: 1; }
+.fd-actions .btn { min-width: 0; }
 
 .fd-state {
   padding: 60px 20px;
@@ -275,6 +285,7 @@ const CSS = `
 .fd-review-head {
   display: flex;
   justify-content: space-between;
+  min-width: 0;
   gap: 10px;
   font-size: 12px;
   color: var(--mut);
@@ -282,6 +293,54 @@ const CSS = `
 }
 .fd-review-stars { color: #f59e0b; }
 .fd-review p { font-size: 13px; line-height: 1.55; margin: 0; color: var(--ink); }
+
+@media (max-width: 900px) {
+  .fd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .fd-card { padding: 16px; gap: 11px; border-radius: 15px; }
+  .fd-card-head { gap: 10px; }
+  .fd-avatar { width: 42px; height: 42px; font-size: 17px; }
+  .fd-name { font-size: 14px; }
+  .fd-spec { font-size: 12px; }
+  .fd-bio { font-size: 12px; }
+  .fd-hosp { padding: 4px 8px; font-size: 10px; }
+  .fd-rating { gap: 5px; font-size: 12px; }
+  .fd-rating-count { font-size: 11px; }
+  .fd-actions { gap: 6px; }
+  .fd-actions .btn { padding: 7px 9px; font-size: 12px; }
+}
+
+@media (max-width: 600px) {
+  .fd-page { gap: 16px; }
+  .fd-header h1 { font-size: 25px; }
+  .fd-toolbar { padding: 12px; gap: 8px; }
+  .fd-search { flex-basis: 100%; min-width: 0; }
+  .fd-search input,
+  .fd-select { font-size: 16px; }
+  .fd-select { flex: 1 1 100%; min-width: 0; }
+  .fd-card { padding: 13px; gap: 9px; }
+  .fd-avatar { width: 36px; height: 36px; font-size: 15px; }
+  .fd-name { font-size: 13px; }
+  .fd-years { font-size: 10px; }
+  .fd-stars svg { width: 12px; height: 12px; }
+  .fd-rating { flex-wrap: wrap; gap: 4px; }
+  .fd-actions .btn { padding: 7px 5px; font-size: 11px; }
+  .fd-hospitals { gap: 4px; }
+  .fd-hosp { max-width: 100%; overflow-wrap: anywhere; }
+  .fd-card-head > div { min-width: 0; overflow-wrap: anywhere; }
+  .fd-rating-count { min-width: 0; overflow-wrap: anywhere; }
+}
+
+@media (max-width: 380px) {
+  .fd-grid { grid-template-columns: minmax(0, 1fr); }
+  .fd-card { padding: 16px; gap: 11px; }
+  .fd-card-head { gap: 10px; }
+  .fd-avatar { width: 42px; height: 42px; font-size: 17px; }
+  .fd-name { font-size: 15px; }
+  .fd-spec { font-size: 13px; }
+  .fd-years { font-size: 12px; }
+  .fd-bio { font-size: 13px; }
+  .fd-actions .btn { padding: 9px 10px; font-size: 13px; }
+}
 `;
 
 export default function FindDoctors() {

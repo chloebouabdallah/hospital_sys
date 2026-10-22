@@ -172,6 +172,88 @@ const CSS = `
   accent-color: var(--v);
   cursor: pointer;
 }
+
+@media (max-width: 1000px) {
+  .as-table { table-layout: fixed; font-size: 13px; }
+  .as-table th {
+    font-size: 11px;
+    padding: 12px 9px 10px;
+    letter-spacing: 0.04em;
+  }
+  .as-table td { padding: 12px 9px; }
+  .as-hours { font-size: 11px; }
+  .as-col-actions .btn { margin: 2px; padding: 5px 8px; font-size: 11px; }
+}
+
+@media (max-width: 700px) {
+  .as-header h1 { font-size: 25px; }
+  .as-header > .btn { padding: 8px 12px; font-size: 13px; }
+  .as-page > .form-group { max-width: none !important; }
+  .as-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .as-table,
+  .as-table tbody { display: block; width: 100%; }
+  .as-table thead { display: none; }
+  .as-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .as-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .as-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .as-table td:nth-child(1)::before { content: 'Doctor'; }
+  .as-table td:nth-child(2)::before { content: 'Hospital'; }
+  .as-table td:nth-child(3)::before { content: 'Day'; }
+  .as-table td:nth-child(4)::before { content: 'Hours'; }
+  .as-table td:nth-child(5)::before { content: 'Status'; }
+  .as-table td:nth-child(6) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .as-table td:nth-child(6)::before { content: ''; display: none; }
+  .as-doctor { font-size: 12px; }
+  .as-spec { font-size: 11px; }
+  .as-day,
+  .as-available { padding: 3px 8px; font-size: 10px; }
+  .as-hours { font-size: 11px; }
+  .as-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+  .as-table tr { grid-template-columns: minmax(0, 1fr); }
+  .as-table td:nth-child(6) { grid-column: auto; }
+}
 `;
 
 // ---------- Page ----------

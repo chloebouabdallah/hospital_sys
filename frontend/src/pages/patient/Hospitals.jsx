@@ -98,7 +98,7 @@ const CSS = `
   align-items: start;
 }
 @media (max-width: 960px) {
-  .hp-split { grid-template-columns: 1fr; }
+  .hp-split { grid-template-columns: minmax(0, 1fr); gap: 14px; }
 }
 
 .hp-map {
@@ -328,6 +328,47 @@ const CSS = `
   text-align: center;
   color: var(--mut);
   font-size: 15px;
+}
+
+@media (max-width: 960px) {
+  .hp-map { position: static; }
+  .hp-map-canvas { width: min(100%, 280px); margin-inline: auto; }
+}
+
+@media (max-width: 700px) {
+  .hp-page { gap: 18px; }
+  .hp-header h1 { font-size: 25px; }
+  .hp-form { padding: 16px; gap: 12px; }
+  .hp-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .hp-field input,
+  .hp-field select { padding: 10px; font-size: 16px; }
+  .hp-form-actions { justify-content: flex-start; gap: 8px; }
+  .hp-form-actions .btn { flex: 1 1 140px; }
+  .hp-geo-hint { flex: 1 1 100%; }
+
+  .hp-map { padding: 16px; }
+  .hp-map-canvas { width: min(100%, 230px); }
+  .hp-card-head { padding: 16px; gap: 10px; }
+  .hp-name { font-size: 14px; }
+  .hp-city { font-size: 12px; }
+  .hp-distance { padding: 4px 9px; font-size: 11px; }
+  .hp-card-toggle { margin-inline: 16px; padding: 8px 14px 13px; }
+  .hp-docs { padding: 4px 14px 14px; gap: 10px; }
+  .hp-doc { padding: 12px; gap: 10px; }
+  .hp-doc-avatar { width: 36px; height: 36px; font-size: 15px; }
+  .hp-doc-name { font-size: 13px; }
+  .hp-doc-bio { font-size: 12px; }
+  .hp-doc-actions { flex-wrap: wrap; }
+  .hp-doc-actions .btn { padding: 6px 10px; font-size: 12px; }
+  .hp-empty { padding: 36px 20px; font-size: 14px; }
+}
+
+@media (max-width: 380px) {
+  .hp-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .hp-form-actions .btn { flex-basis: 100%; }
+  .hp-map-canvas { width: min(100%, 190px); }
+  .hp-card-head { flex-direction: column; }
+  .hp-doc { gap: 8px; padding: 10px; }
 }
 `;
 

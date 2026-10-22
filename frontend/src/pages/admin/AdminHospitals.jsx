@@ -152,6 +152,84 @@ const CSS = `
   color: var(--mut);
   margin: 4px 0 0;
 }
+
+@media (max-width: 1000px) {
+  .ah-table { table-layout: fixed; font-size: 13px; }
+  .ah-table th {
+    font-size: 11px;
+    padding: 12px 9px 10px;
+    letter-spacing: 0.04em;
+  }
+  .ah-table td { padding: 12px 9px; }
+  .ah-coords { font-size: 11px; }
+  .ah-col-actions .btn { margin: 2px; padding: 5px 8px; font-size: 11px; }
+}
+
+@media (max-width: 700px) {
+  .ah-header h1 { font-size: 25px; }
+  .ah-header > .btn { padding: 8px 12px; font-size: 13px; }
+  .ah-table-wrap {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .ah-table,
+  .ah-table tbody { display: block; width: 100%; }
+  .ah-table thead { display: none; }
+  .ah-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+  }
+  .ah-table td {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .ah-table td::before {
+    margin-bottom: 3px;
+    color: var(--mut);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .ah-table td:nth-child(1)::before { content: 'Name'; }
+  .ah-table td:nth-child(2)::before { content: 'City'; }
+  .ah-table td:nth-child(3)::before { content: 'Coordinates'; }
+  .ah-table td:nth-child(4)::before { content: 'Doctors'; }
+  .ah-table td:nth-child(5) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-bottom: 0;
+  }
+  .ah-table td:nth-child(5)::before { content: ''; display: none; }
+  .ah-name { font-size: 12px; }
+  .ah-address { font-size: 11px; }
+  .ah-coords { font-size: 11px; }
+  .ah-col-actions .btn { margin: 0; padding: 5px 9px; font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+  .ah-table tr { grid-template-columns: minmax(0, 1fr); }
+  .ah-table td:nth-child(5) { grid-column: auto; }
+}
 `;
 
 // ---------- Page ----------

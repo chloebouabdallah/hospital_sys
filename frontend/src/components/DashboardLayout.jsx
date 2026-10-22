@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
 import useTheme from '../hooks/useTheme';
@@ -95,21 +96,21 @@ const Icon = {
 
 // ---- Nav items per role ----
 const NAV = {
- patient: [
-  { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
-  { to: '/dashboard/symptom-checker', label: 'Symptom checker', Icon: Icon.Activity },
-  { to: '/dashboard/find-doctors', label: 'Find doctors', Icon: Icon.Doctor },
-  { to: '/dashboard/appointments', label: 'My appointments', Icon: Icon.Calendar },
-  { to: '/dashboard/hospitals', label: 'Hospitals', Icon: Icon.Hospital },
-  { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
-],
-doctor: [
-  { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
-  { to: '/dashboard/schedule', label: 'My schedule', Icon: Icon.Clock },
-  { to: '/dashboard/appointments', label: 'Appointments', Icon: Icon.Calendar },
-  { to: '/dashboard/reviews', label: 'My reviews', Icon: Icon.Star },
-  { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
-],
+  patient: [
+    { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
+    { to: '/dashboard/symptom-checker', label: 'Symptom checker', Icon: Icon.Activity },
+    { to: '/dashboard/find-doctors', label: 'Find doctors', Icon: Icon.Doctor },
+    { to: '/dashboard/appointments', label: 'My appointments', Icon: Icon.Calendar },
+    { to: '/dashboard/hospitals', label: 'Hospitals', Icon: Icon.Hospital },
+    { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
+  ],
+  doctor: [
+    { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
+    { to: '/dashboard/schedule', label: 'My schedule', Icon: Icon.Clock },
+    { to: '/dashboard/appointments', label: 'Appointments', Icon: Icon.Calendar },
+    { to: '/dashboard/reviews', label: 'My reviews', Icon: Icon.Star },
+    { to: '/dashboard/profile', label: 'Profile', Icon: Icon.User },
+  ],
   admin: [
     { to: '/dashboard', label: 'Overview', Icon: Icon.Home, end: true },
     { to: '/dashboard/appointments', label: 'Appointments', Icon: Icon.Calendar },
@@ -130,9 +131,26 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const role = user?.role ?? 'patient';
   const items = NAV[role] ?? NAV.patient;
+
+  // Close the drawer whenever the route changes
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    function closeOnEscape(event) {
+      if (event.key === 'Escape') setMenuOpen(false);
+    }
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
 
   async function handleLogout() {
     await logout();
@@ -141,18 +159,40 @@ export default function DashboardLayout() {
 
   return (
     <div className="dl-shell">
-      <aside className="dl-side">
-        <Link to="/dashboard" className="dl-brand">
-          <Logo size={26} />
-          <span>GuideCare</span>
-        </Link>
+      {/* Dark overlay behind the drawer (mobile only) */}
+      {menuOpen && (
+        <button
+          type="button"
+          className="dl-overlay"
+          aria-label="Close navigation menu"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
 
-        <nav className="dl-nav">
+      <aside className={`dl-side${menuOpen ? ' is-open' : ''}`}>
+        {/* Sidebar head: brand + X button */}
+        <div className="dl-side-head">
+          <Link to="/dashboard" className="dl-brand">
+            <Logo size={26} />
+            <span>GuideCare</span>
+          </Link>
+          <button
+            type="button"
+            className="dl-side-close"
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+          >
+            ×
+          </button>
+        </div>
+
+        <nav className="dl-nav" id="dashboard-navigation">
           {items.map(({ to, label, Icon: IconComp, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
+              onClick={() => setMenuOpen(false)}
               className={({ isActive }) => `dl-link${isActive ? ' is-active' : ''}`}
             >
               <span className="dl-link-icon" aria-hidden="true">
@@ -172,7 +212,18 @@ export default function DashboardLayout() {
 
       <div className="dl-main">
         <header className="dl-top">
-          <div />
+          <button
+            type="button"
+            className="dl-menu-toggle"
+            aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={menuOpen}
+            aria-controls="dashboard-navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className={menuOpen ? 'is-open' : ''} />
+            <span className={menuOpen ? 'is-open' : ''} />
+            <span className={menuOpen ? 'is-open' : ''} />
+          </button>
           <div className="dl-top-actions">
             <button
               className="btn btn-ghost btn-sm"
